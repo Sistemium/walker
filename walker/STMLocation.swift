@@ -29,7 +29,12 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(locations.first!.coordinate)
+        locations.forEach{ location in
+            STMPersister.sharedInstance.mergeSync(entityName: "location",
+                                                  attributes: ["latitude": location.coordinate.latitude,
+                                                               "longitude": location.coordinate.longitude])
+            print(locations.first!.coordinate)
+        }
     }
     
 }
