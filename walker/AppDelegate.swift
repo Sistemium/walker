@@ -7,32 +7,15 @@
 //
 
 import UIKit
-import CoreLocation
-import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    let locationManager = CLLocationManager()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        locationManager.requestAlwaysAuthorization()
-        
-        locationManager.allowsBackgroundLocationUpdates = true
-        
-        locationManager.pausesLocationUpdatesAutomatically = false
-        
-        locationManager.startUpdatingLocation()
-        
-        locationManager.delegate = self
-        
         return true
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(locations.first!.coordinate)
     }
     
 

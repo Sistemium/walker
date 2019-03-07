@@ -20,6 +20,8 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MGLMapboxAccessToken</key>
+	<string>pk.eyJ1Ijoia3JvZGFuaXgiLCJhIjoiY2pzdnp4aGF4MGJpNjQ0cHZuNTB5eGdhYyJ9.JHIAWIZsKRkGLGpXCxdoVg</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your location is required for app to work</string>
 	<key>UIBackgroundModes</key>

@@ -12,6 +12,8 @@
 		350167B3222DF9A500052070 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350167B1222DF9A500052070 /* Main.storyboard */; };
 		350167B5222DF9A900052070 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 350167B4222DF9A900052070 /* Assets.xcassets */; };
 		350167B8222DF9A900052070 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350167B6222DF9A900052070 /* LaunchScreen.storyboard */; };
+		358AFC522230094E0013FCF3 /* STMLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC512230094E0013FCF3 /* STMLocation.swift */; };
+		358AFC5422300C620013FCF3 /* STMPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC5322300C620013FCF3 /* STMPersister.swift */; };
 		7EBB99418C62C8BEBE20087E /* Pods_walker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 799C8C232D00505393AD083B /* Pods_walker.framework */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,8 @@
 		350167B4222DF9A900052070 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		350167B7222DF9A900052070 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		350167B9222DF9A900052070 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		358AFC512230094E0013FCF3 /* STMLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMLocation.swift; sourceTree = "<group>"; };
+		358AFC5322300C620013FCF3 /* STMPersister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMPersister.swift; sourceTree = "<group>"; };
 		3CF9416FA46E246391F523DC /* Pods-walker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.release.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.release.xcconfig"; sourceTree = "<group>"; };
 		799C8C232D00505393AD083B /* Pods_walker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_walker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86291F23E3BD875692C74BB0 /* Pods-walker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.debug.xcconfig"; sourceTree = "<group>"; };
@@ -61,14 +65,24 @@
 		350167AC222DF9A500052070 /* walker */ = {
 			isa = PBXGroup;
 			children = (
+				358AFC572230119B0013FCF3 /* persisting */,
 				350167AD222DF9A500052070 /* AppDelegate.swift */,
 				350167AF222DF9A500052070 /* ViewController.swift */,
 				350167B1222DF9A500052070 /* Main.storyboard */,
 				350167B4222DF9A900052070 /* Assets.xcassets */,
 				350167B6222DF9A900052070 /* LaunchScreen.storyboard */,
 				350167B9222DF9A900052070 /* Info.plist */,
+				358AFC512230094E0013FCF3 /* STMLocation.swift */,
 			);
 			path = walker;
+			sourceTree = "<group>";
+		};
+		358AFC572230119B0013FCF3 /* persisting */ = {
+			isa = PBXGroup;
+			children = (
+				358AFC5322300C620013FCF3 /* STMPersister.swift */,
+			);
+			path = persisting;
 			sourceTree = "<group>";
 		};
 		477F9FA334488C23B2E1BBF7 /* Frameworks */ = {
@@ -173,15 +187,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-walker/Pods-walker-frameworks.sh",
 				"${PODS_ROOT}/Mapbox-iOS-SDK/dynamic/Mapbox.framework",
 				"${PODS_ROOT}/Mapbox-iOS-SDK/dynamic/Mapbox.framework.dSYM",
-				"${BUILT_PRODUCTS_DIR}/MapboxCoreNavigation/MapboxCoreNavigation.framework",
-				"${BUILT_PRODUCTS_DIR}/MapboxDirections.swift/MapboxDirections.framework",
-				"${BUILT_PRODUCTS_DIR}/MapboxMobileEvents/MapboxMobileEvents.framework",
-				"${BUILT_PRODUCTS_DIR}/MapboxNavigation/MapboxNavigation.framework",
-				"${PODS_ROOT}/MapboxNavigationNative/MapboxNavigationNative.framework",
-				"${PODS_ROOT}/MapboxNavigationNative/MapboxNavigationNative.framework.dSYM",
-				"${BUILT_PRODUCTS_DIR}/MapboxSpeech/MapboxSpeech.framework",
-				"${BUILT_PRODUCTS_DIR}/Polyline/Polyline.framework",
-				"${BUILT_PRODUCTS_DIR}/Solar/Solar.framework",
+				"${BUILT_PRODUCTS_DIR}/Squeal/Squeal.framework",
 				"${BUILT_PRODUCTS_DIR}/Turf/Turf.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -190,15 +196,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mapbox.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/Mapbox.framework.dSYM",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxCoreNavigation.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxDirections.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxMobileEvents.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxNavigation.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxNavigationNative.framework",
-				"${DWARF_DSYM_FOLDER_PATH}/MapboxNavigationNative.framework.dSYM",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MapboxSpeech.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Polyline.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Solar.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Squeal.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Turf.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,7 +233,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				358AFC522230094E0013FCF3 /* STMLocation.swift in Sources */,
 				350167B0222DF9A500052070 /* ViewController.swift in Sources */,
+				358AFC5422300C620013FCF3 /* STMPersister.swift in Sources */,
 				350167AE222DF9A500052070 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

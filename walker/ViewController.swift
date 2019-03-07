@@ -9,9 +9,6 @@
 import UIKit
 import CoreLocation
 import Mapbox
-import MapboxCoreNavigation
-import MapboxNavigation
-import MapboxDirections
 
 class ViewController: UIViewController {
     
@@ -22,6 +19,8 @@ class ViewController: UIViewController {
         mapView.showsUserLocation = true
         mapView.showsUserHeadingIndicator = true
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
+        
+        STMLocation.sharedInstance.startTracking()
         
     }
     
