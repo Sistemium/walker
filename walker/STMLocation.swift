@@ -14,17 +14,36 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     
     private let locationManager = CLLocationManager()
     
+    private var routeId = ""
+    
+    public private(set) var tracking = false
+    
+    override init() {
+        super.init()
+        locationManager.delegate = self
+    }
+    
     func startTracking(){
         
-        locationManager.requestAlwaysAuthorization()
-        
-        locationManager.allowsBackgroundLocationUpdates = true
-        
-        locationManager.pausesLocationUpdatesAutomatically = false
+//        locationManager.requestAlwaysAuthorization()
+//
+//        locationManager.allowsBackgroundLocationUpdates = true
+//
+//        locationManager.pausesLocationUpdatesAutomatically = false
         
         locationManager.startUpdatingLocation()
         
-        locationManager.delegate = self
+        routeId = UUID().uuidString
+        
+        tracking = true
+        
+    }
+    
+    func stopTracking(){
+        
+        locationManager.stopUpdatingLocation()
+        
+        tracking = false
         
     }
     
@@ -32,7 +51,8 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
         locations.forEach{ location in
             STMPersister.sharedInstance.mergeSync(entityName: "location",
                                                   attributes: ["latitude": location.coordinate.latitude,
-                                                               "longitude": location.coordinate.longitude])
+                                                               "longitude": location.coordinate.longitude,
+                                                               "routeId": routeId])
             print(locations.first!.coordinate)
         }
     }

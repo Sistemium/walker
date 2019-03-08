@@ -13,14 +13,37 @@ import Mapbox
 class ViewController: UIViewController {
     
     @IBOutlet var mapView: MGLMapView!
+    
+    @IBAction func didPressedGeoTrackingButton(_ sender: UIButton) {
+        
+        if (STMLocation.sharedInstance.tracking){
+            
+            DispatchQueue.main.async() {
+                
+                sender.titleLabel?.text = "Start geotracking"
+                
+            }
+            
+            STMLocation.sharedInstance.stopTracking()
+            
+        } else {
+            
+            DispatchQueue.main.async() {
+                sender.titleLabel?.text = "Stop geotracking"
+            }
+            
+            STMLocation.sharedInstance.startTracking()
+            
+        }
+        
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
         mapView.showsUserHeadingIndicator = true
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
-        
-        STMLocation.sharedInstance.startTracking()
         
     }
     

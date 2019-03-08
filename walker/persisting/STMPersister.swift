@@ -43,7 +43,8 @@ class STMPersister{
         let _ = try? database.createTable("location", definitions: [
             "id TEXT PRIMARY KEY",
             "latitude REAL",
-            "longitude REAL"
+            "longitude REAL",
+            "routeId TEXT"
             ])
         
     }
