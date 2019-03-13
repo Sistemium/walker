@@ -14,6 +14,7 @@
 		350167B8222DF9A900052070 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 350167B6222DF9A900052070 /* LaunchScreen.storyboard */; };
 		358AFC522230094E0013FCF3 /* STMLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC512230094E0013FCF3 /* STMLocation.swift */; };
 		358AFC5422300C620013FCF3 /* STMPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC5322300C620013FCF3 /* STMPersister.swift */; };
+		358AFC5B223935510013FCF3 /* STMFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC5A223935510013FCF3 /* STMFunctions.swift */; };
 		7EBB99418C62C8BEBE20087E /* Pods_walker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 799C8C232D00505393AD083B /* Pods_walker.framework */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 		350167B9222DF9A900052070 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		358AFC512230094E0013FCF3 /* STMLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMLocation.swift; sourceTree = "<group>"; };
 		358AFC5322300C620013FCF3 /* STMPersister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMPersister.swift; sourceTree = "<group>"; };
+		358AFC5A223935510013FCF3 /* STMFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMFunctions.swift; sourceTree = "<group>"; };
 		3CF9416FA46E246391F523DC /* Pods-walker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.release.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.release.xcconfig"; sourceTree = "<group>"; };
 		799C8C232D00505393AD083B /* Pods_walker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_walker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86291F23E3BD875692C74BB0 /* Pods-walker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.debug.xcconfig"; sourceTree = "<group>"; };
@@ -65,7 +67,7 @@
 		350167AC222DF9A500052070 /* walker */ = {
 			isa = PBXGroup;
 			children = (
-				358AFC572230119B0013FCF3 /* persisting */,
+				358AFC5322300C620013FCF3 /* STMPersister.swift */,
 				350167AD222DF9A500052070 /* AppDelegate.swift */,
 				350167AF222DF9A500052070 /* ViewController.swift */,
 				350167B1222DF9A500052070 /* Main.storyboard */,
@@ -73,16 +75,9 @@
 				350167B6222DF9A900052070 /* LaunchScreen.storyboard */,
 				350167B9222DF9A900052070 /* Info.plist */,
 				358AFC512230094E0013FCF3 /* STMLocation.swift */,
+				358AFC5A223935510013FCF3 /* STMFunctions.swift */,
 			);
 			path = walker;
-			sourceTree = "<group>";
-		};
-		358AFC572230119B0013FCF3 /* persisting */ = {
-			isa = PBXGroup;
-			children = (
-				358AFC5322300C620013FCF3 /* STMPersister.swift */,
-			);
-			path = persisting;
 			sourceTree = "<group>";
 		};
 		477F9FA334488C23B2E1BBF7 /* Frameworks */ = {
@@ -188,7 +183,7 @@
 				"${PODS_ROOT}/Mapbox-iOS-SDK/dynamic/Mapbox.framework",
 				"${PODS_ROOT}/Mapbox-iOS-SDK/dynamic/Mapbox.framework.dSYM",
 				"${BUILT_PRODUCTS_DIR}/Squeal/Squeal.framework",
-				"${BUILT_PRODUCTS_DIR}/Turf/Turf.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftTurf/SwiftTurf.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
@@ -197,7 +192,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mapbox.framework",
 				"${DWARF_DSYM_FOLDER_PATH}/Mapbox.framework.dSYM",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Squeal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Turf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftTurf.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -236,6 +231,7 @@
 				358AFC522230094E0013FCF3 /* STMLocation.swift in Sources */,
 				350167B0222DF9A500052070 /* ViewController.swift in Sources */,
 				358AFC5422300C620013FCF3 /* STMPersister.swift in Sources */,
+				358AFC5B223935510013FCF3 /* STMFunctions.swift in Sources */,
 				350167AE222DF9A500052070 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
