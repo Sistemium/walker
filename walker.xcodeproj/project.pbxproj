@@ -29,6 +29,7 @@
 		358AFC512230094E0013FCF3 /* STMLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMLocation.swift; sourceTree = "<group>"; };
 		358AFC5322300C620013FCF3 /* STMPersister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMPersister.swift; sourceTree = "<group>"; };
 		358AFC5A223935510013FCF3 /* STMFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMFunctions.swift; sourceTree = "<group>"; };
+		358AFC5D2239C0E60013FCF3 /* walker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = walker.entitlements; sourceTree = "<group>"; };
 		3CF9416FA46E246391F523DC /* Pods-walker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.release.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.release.xcconfig"; sourceTree = "<group>"; };
 		799C8C232D00505393AD083B /* Pods_walker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_walker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86291F23E3BD875692C74BB0 /* Pods-walker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.debug.xcconfig"; sourceTree = "<group>"; };
@@ -67,6 +68,7 @@
 		350167AC222DF9A500052070 /* walker */ = {
 			isa = PBXGroup;
 			children = (
+				358AFC5D2239C0E60013FCF3 /* walker.entitlements */,
 				358AFC5322300C620013FCF3 /* STMPersister.swift */,
 				350167AD222DF9A500052070 /* AppDelegate.swift */,
 				350167AF222DF9A500052070 /* ViewController.swift */,
@@ -134,6 +136,9 @@
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 0;
 							};
 						};
 					};
@@ -379,6 +384,7 @@
 			baseConfigurationReference = 86291F23E3BD875692C74BB0 /* Pods-walker.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DP58H3X45C;
 				INFOPLIST_FILE = walker/Info.plist;
@@ -388,6 +394,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.sistemium.walker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -398,6 +405,7 @@
 			baseConfigurationReference = 3CF9416FA46E246391F523DC /* Pods-walker.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = DP58H3X45C;
 				INFOPLIST_FILE = walker/Info.plist;
@@ -407,6 +415,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.sistemium.walker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

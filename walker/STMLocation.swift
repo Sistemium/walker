@@ -23,7 +23,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
         locationManager.delegate = self
         locationManager.distanceFilter = 15
 //        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        locationManager.showsBackgroundLocationIndicator = true
+//        locationManager.showsBackgroundLocationIndicator = true
     }
     
     func startTracking(){
