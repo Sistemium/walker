@@ -1,24 +1,24 @@
 PODS:
-  - Mapbox-iOS-SDK (4.9.0)
+  - geos (3.7.1)
+  - GEOSwift (3.1.0):
+    - geos (= 3.7.1)
   - Squeal (1.2.0)
-  - SwiftTurf (0.3.3)
 
 DEPENDENCIES:
-  - Mapbox-iOS-SDK (~> 4.9)
+  - GEOSwift (~> 3.1)
   - Squeal (~> 1.2)
-  - SwiftTurf (~> 0.3.3)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - Mapbox-iOS-SDK
+    - geos
+    - GEOSwift
     - Squeal
-    - SwiftTurf
 
 SPEC CHECKSUMS:
-  Mapbox-iOS-SDK: 225036950837cbe408e6b333e51cd6001c122499
+  geos: 4f86329dc270f513bc220c77d9079aef38c5960d
+  GEOSwift: 663f79f312f61dbc50ea7d233b8d04642f9aa1fb
   Squeal: f6ca46fb5b7b24c03b0e8c729b038bc4ca964241
-  SwiftTurf: 340da9dbf60fe7ded0cac158657ec463269d581c
 
-PODFILE CHECKSUM: ed7fc5bdb0d02042bcedb673f4eafbe05179d3cd
+PODFILE CHECKSUM: be727251693020f764c5fd2ebe45e728f308627c
 
 COCOAPODS: 1.5.3
