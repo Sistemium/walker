@@ -66,30 +66,36 @@ class ViewController: UIViewController, MKMapViewDelegate {
 
             let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr:"routeId = '\(route["routeId"] as! String)'")
 
-            let coordinates = locations.map{
+            var coordinates = locations.map{
                 return Coordinate(x: CLLocationDegrees($0["longitude"] as! Double), y: CLLocationDegrees($0["latitude"] as! Double))
             }
 
-            if (coordinates.count > 1){
-
-                let lineString = LineString(points: coordinates)!.mapShape()! as! MKPolyline
+            if (coordinates.count == 1){
                 
-//                let bufferLineString = SwiftTurf.buffer(lineString, distance: 30, units: .Meters)
-//
-//                let outer = bufferLineString!.geometry[0]
-//                let interiors = bufferLineString!.geometry[1..<bufferLineString!.geometry.count].map({ coords in
-//                    return MGLPolygon(coordinates: coords, count: UInt(coords.count))
-//                })
-//
-//                let currentBufferPolygon = MGLPolygon(coordinates: outer, count: UInt(outer.count), interiorPolygons: interiors)
+                coordinates.append(coordinates[0])
                 
+            }
+            
+            let lineString = LineString(points: coordinates)!.buffer(width: 0.001)!.mapShape()!
+            
+            if let polygon = lineString as? MKPolygon{
                 DispatchQueue.main.async() {
                     [unowned self] in
-
-                    self.mapView.addOverlay(lineString)
-                    
+                    self.mapView.addOverlay(polygon)
                 }
-
+            }
+            
+            if let shapesCollection = lineString as? MKShapesCollection{
+                let shapes = shapesCollection.shapes
+                
+                for shape in shapes {
+                    if let polygon = shape as? MKPolygon {
+                        DispatchQueue.main.async() {
+                            [unowned self] in
+                            self.mapView.addOverlay(polygon)
+                        }
+                    }
+                }
             }
 
         }
@@ -97,10 +103,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if overlay is MKPolyline {
-            let lineView = MKPolylineRenderer(overlay: overlay)
-            lineView.strokeColor = UIColor.red
-            return lineView
+        if overlay is MKPolygon {
+            let polygon = MKPolygonRenderer(overlay: overlay)
+            polygon.fillColor = .red
+            polygon.alpha = 0.5
+            return polygon
         }
         return MKOverlayRenderer()
     }
