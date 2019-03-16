@@ -62,7 +62,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         let routes = STMPersister.sharedInstance.findSync(entityName: "location", groupBy:"routeId")
         
-        var polygon: Polygon? = nil
+        var polygons: [Polygon] = []
         
         for route in routes {
 
@@ -78,25 +78,17 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 
             }
             
-            let newPolygon = (LineString(points: coordinates)!.buffer(width: 0.001) as! Polygon)
+            polygons.append((LineString(points: coordinates)!.buffer(width: 0.001) as! Polygon))
             
-            if (polygon == nil){
-                
-                polygon = newPolygon
-                
-            } else {
-                
-                polygon = (polygon!.union(newPolygon) as! Polygon)
-                
-            }
+            //union here
 
         }
         
-        if (polygon != nil){
+        for polygon in polygons{
             
             DispatchQueue.main.async() {
                 [unowned self] in
-                self.mapView.addOverlay(polygon?.mapShape() as! MKPolygon)
+                self.mapView.addOverlay(polygon.mapShape() as! MKPolygon)
             }
             
         }
