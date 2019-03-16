@@ -61,7 +61,9 @@ class ViewController: UIViewController, MKMapViewDelegate {
         mapView.removeOverlays(mapView.overlays)
         
         let routes = STMPersister.sharedInstance.findSync(entityName: "location", groupBy:"routeId")
-
+        
+        var polygon: Polygon? = nil
+        
         for route in routes {
 
             let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr:"routeId = '\(route["routeId"] as! String)'")
@@ -76,28 +78,27 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 
             }
             
-            let lineString = LineString(points: coordinates)!.buffer(width: 0.001)!.mapShape()!
+            let newPolygon = (LineString(points: coordinates)!.buffer(width: 0.001) as! Polygon)
             
-            if let polygon = lineString as? MKPolygon{
-                DispatchQueue.main.async() {
-                    [unowned self] in
-                    self.mapView.addOverlay(polygon)
-                }
-            }
-            
-            if let shapesCollection = lineString as? MKShapesCollection{
-                let shapes = shapesCollection.shapes
+            if (polygon == nil){
                 
-                for shape in shapes {
-                    if let polygon = shape as? MKPolygon {
-                        DispatchQueue.main.async() {
-                            [unowned self] in
-                            self.mapView.addOverlay(polygon)
-                        }
-                    }
-                }
+                polygon = newPolygon
+                
+            } else {
+                
+                polygon = (polygon!.union(newPolygon) as! Polygon)
+                
             }
 
+        }
+        
+        if (polygon != nil){
+            
+            DispatchQueue.main.async() {
+                [unowned self] in
+                self.mapView.addOverlay(polygon?.mapShape() as! MKPolygon)
+            }
+            
         }
         
     }
