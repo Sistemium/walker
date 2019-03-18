@@ -11,6 +11,8 @@ import CoreLocation
 import MapKit
 import GEOSwift
 
+let POLYGON_SIZE = 0.0001
+
 class ViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet var mapView: MKMapView!
@@ -78,11 +80,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 
             }
             
-            polygons.append((LineString(points: coordinates)!.buffer(width: 0.001) as! Polygon))
-            
-            //union here
+            polygons.append((LineString(points: coordinates)!.buffer(width: POLYGON_SIZE) as! Polygon))
 
         }
+        
+        polygons = unionPolygons(polygons: polygons)
         
         for polygon in polygons{
             
@@ -92,6 +94,42 @@ class ViewController: UIViewController, MKMapViewDelegate {
             }
             
         }
+        
+    }
+    
+    func unionPolygons(polygons:[Polygon]) -> [Polygon] {
+        
+        var _polygons = polygons
+        
+        var index1 = 0
+        
+        while (index1 < _polygons.count - 1){
+            
+            var index2 = index1 + 1
+            
+            while (index2 < _polygons.count){
+                
+                if (_polygons[index1].intersects(_polygons[index2])
+                    && _polygons[index1].area()! < POLYGON_SIZE
+                    && _polygons[index2].area()! < POLYGON_SIZE){
+                    
+                    _polygons[index1] = _polygons[index1].union(_polygons[index2]) as! Polygon
+                    
+                    _polygons.remove(at: index2)
+                    
+                    index2 -= 1
+                    
+                }
+                
+                index2 += 1
+                
+            }
+            
+            index1 += 1
+            
+        }
+        
+        return _polygons
         
     }
     
