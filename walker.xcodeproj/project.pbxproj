@@ -15,6 +15,7 @@
 		358AFC522230094E0013FCF3 /* STMLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC512230094E0013FCF3 /* STMLocation.swift */; };
 		358AFC5422300C620013FCF3 /* STMPersister.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC5322300C620013FCF3 /* STMPersister.swift */; };
 		358AFC5B223935510013FCF3 /* STMFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358AFC5A223935510013FCF3 /* STMFunctions.swift */; };
+		358AFC6022410FB10013FCF3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 358AFC5F22410FB10013FCF3 /* GoogleService-Info.plist */; };
 		7EBB99418C62C8BEBE20087E /* Pods_walker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 799C8C232D00505393AD083B /* Pods_walker.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		358AFC5322300C620013FCF3 /* STMPersister.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMPersister.swift; sourceTree = "<group>"; };
 		358AFC5A223935510013FCF3 /* STMFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = STMFunctions.swift; sourceTree = "<group>"; };
 		358AFC5D2239C0E60013FCF3 /* walker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = walker.entitlements; sourceTree = "<group>"; };
+		358AFC5F22410FB10013FCF3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3CF9416FA46E246391F523DC /* Pods-walker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.release.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.release.xcconfig"; sourceTree = "<group>"; };
 		799C8C232D00505393AD083B /* Pods_walker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_walker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		86291F23E3BD875692C74BB0 /* Pods-walker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-walker.debug.xcconfig"; path = "Pods/Target Support Files/Pods-walker/Pods-walker.debug.xcconfig"; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				350167B9222DF9A900052070 /* Info.plist */,
 				358AFC512230094E0013FCF3 /* STMLocation.swift */,
 				358AFC5A223935510013FCF3 /* STMFunctions.swift */,
+				358AFC5F22410FB10013FCF3 /* GoogleService-Info.plist */,
 			);
 			path = walker;
 			sourceTree = "<group>";
@@ -111,6 +114,7 @@
 				350167A7222DF9A500052070 /* Frameworks */,
 				350167A8222DF9A500052070 /* Resources */,
 				3D5A994E5098E32FD8B1ECDB /* [CP] Embed Pods Frameworks */,
+				358AFC61224112700013FCF3 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -168,6 +172,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				350167B8222DF9A900052070 /* LaunchScreen.storyboard in Resources */,
+				358AFC6022410FB10013FCF3 /* GoogleService-Info.plist in Resources */,
 				350167B5222DF9A900052070 /* Assets.xcassets in Resources */,
 				350167B3222DF9A500052070 /* Main.storyboard in Resources */,
 			);
@@ -176,6 +181,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		358AFC61224112700013FCF3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\"\n";
+		};
 		3D5A994E5098E32FD8B1ECDB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -186,16 +209,20 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-walker/Pods-walker-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/GEOSwift/GEOSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/Squeal/Squeal.framework",
 				"${BUILT_PRODUCTS_DIR}/geos/geos.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GEOSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Squeal.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/geos.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -295,7 +322,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
