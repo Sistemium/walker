@@ -54,6 +54,9 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
+  - PromisesObjC (1.2.7)
+  - PromisesSwift (1.2.7):
+    - PromisesObjC (= 1.2.7)
   - Squeal (1.2.0)
 
 DEPENDENCIES:
@@ -61,6 +64,7 @@ DEPENDENCIES:
   - Fabric (~> 1.9.0)
   - Firebase/Core
   - GEOSwift (~> 3.1)
+  - PromisesSwift (~> 1.2.7)
   - Squeal (~> 1.2)
 
 SPEC REPOS:
@@ -76,6 +80,8 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleUtilities
     - nanopb
+    - PromisesObjC
+    - PromisesSwift
     - Squeal
 
 SPEC CHECKSUMS:
@@ -90,8 +96,10 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 6cf307834da065863f9faf4c0de0a936d81dd832
   GoogleUtilities: 111a012f4c3a29c9e7c954c082fafd6ee3c999c0
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
+  PromisesObjC: 7b28ddd1e78cce8f80f1ada927d2217663a9c672
+  PromisesSwift: b27f410f9ea693753cfd4cfd8ac1c60a471f137b
   Squeal: f6ca46fb5b7b24c03b0e8c729b038bc4ca964241
 
-PODFILE CHECKSUM: 3f54c4d10b4d74ea7d6caa98889782e3c4221d9c
+PODFILE CHECKSUM: c875937ecdcaa337aab1beb382e471bd1fee4fb7
 
 COCOAPODS: 1.5.3

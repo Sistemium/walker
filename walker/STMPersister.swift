@@ -12,6 +12,8 @@ class STMPersister{
     
     static let sharedInstance = STMPersister(dbPath: "walker.db")
     
+    let queue = DispatchQueue(label: "STMPersisterQueue")
+    
     private var database: Database
     
     init(dbPath: String) {
@@ -25,11 +27,17 @@ class STMPersister{
         checkModelMapping()
     }
     
-    func findSync(entityName: String, whereExpr:String? = nil, groupBy:String? = nil, orderBy:String? = nil) -> Array<Dictionary<String, Bindable>>{
+    func findSync(entityName: String, whereExpr:String? = nil, groupBy:String? = nil, orderBy:String? = nil, limit:Int? = nil) -> Array<Dictionary<String, Bindable>>{
         
-        return try! database.selectFrom(entityName, whereExpr:whereExpr, groupBy:groupBy, orderBy:orderBy){
-            return $0.dictionaryValue
+        var result:Array<Dictionary<String, Bindable>>?
+        
+        queue.sync {
+            result = try! database.selectFrom(entityName, whereExpr:whereExpr, groupBy:groupBy, orderBy:orderBy, limit:limit){
+                return $0.dictionaryValue
+            }
         }
+        
+        return result!
         
     }
     
@@ -37,24 +45,32 @@ class STMPersister{
         
         var _attributes = attributes
         
-        _attributes["id"] = UUID().uuidString
-        
         _attributes["ts"] = Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
-    
-        let _ = try? database.insertInto(
-            "location",
-            values: _attributes
-        )
+        
+        queue.sync {
+            let _ = try? database.insertInto(
+                entityName,
+                values: _attributes
+            )
+        }
         
     }
     
     func checkModelMapping(){
         
         let _ = try? database.createTable("location", definitions: [
-            "id TEXT PRIMARY KEY",
+            "id INTEGER PRIMARY KEY",
             "latitude REAL",
             "longitude REAL",
             "routeId TEXT",
+            "ts TEXT"
+            ])
+        
+        let _ = try? database.createTable("processedLocation", definitions: [
+            "id INTEGER PRIMARY KEY AUTOINCREMENT",
+            "latitude REAL",
+            "longitude REAL",
+            "polygonId TEXT",
             "ts TEXT"
             ])
         

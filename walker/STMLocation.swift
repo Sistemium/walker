@@ -21,12 +21,14 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.distanceFilter = 15
+        locationManager.distanceFilter = STMConstants.ACCURACY
 //        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
 //        locationManager.showsBackgroundLocationIndicator = true
     }
     
     func startTracking(){
+        
+        routeId = UUID().uuidString
         
         locationManager.requestAlwaysAuthorization()
 
@@ -35,8 +37,6 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
         locationManager.pausesLocationUpdatesAutomatically = false
         
         locationManager.startUpdatingLocation()
-        
-        routeId = UUID().uuidString
         
         tracking = true
         
