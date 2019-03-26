@@ -67,7 +67,7 @@ class STMPersister{
             ])
         
         let _ = try? database.createTable("processedLocation", definitions: [
-            "id INTEGER PRIMARY KEY AUTOINCREMENT",
+            "id INTEGER PRIMARY KEY",
             "latitude REAL",
             "longitude REAL",
             "polygonId TEXT",
