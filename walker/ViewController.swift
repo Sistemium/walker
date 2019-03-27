@@ -31,8 +31,6 @@ class ViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet var mapView: MKMapView!
     
-    var timer = Timer()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
@@ -40,13 +38,18 @@ class ViewController: UIViewController, MKMapViewDelegate {
         mapView.delegate = self
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
-        timer = Timer.scheduledTimer(withTimeInterval: STMConstants.AVERAGE_HUMAN_SPEED * STMConstants.ACCURACY, repeats:true, block:{[unowned self] _ in
-            self.startProcessing().then(self.drawAllPolylines)
-        })
+        self.startProcessing().then(self.drawAllPolylines)
+        NotificationCenter.default.addObserver(self, selector: #selector(didCreateLocation), name: .didCreateLocation, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+    }
+    
+    @objc func didCreateLocation(){
+        
+        self.startProcessing().then(self.drawAllPolylines)
         
     }
 

@@ -20,3 +20,7 @@ extension Date {
         return formatter.string(from: yourDate!)
     }
 }
+
+extension Notification.Name {
+    static let didCreateLocation = Notification.Name("didCreateLocation")
+}

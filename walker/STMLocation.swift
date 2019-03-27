@@ -56,6 +56,9 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                                                   attributes: ["latitude": location.coordinate.latitude,
                                                                "longitude": location.coordinate.longitude,
                                                                "routeId": routeId])
+            
+            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
+            
             print(locations.first!.coordinate)
         }
     }
