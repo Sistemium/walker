@@ -50,14 +50,17 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
         
     }
     
+    static var test = 0.0
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locations.forEach{ location in
+//            STMLocation.test += 0.0001
             STMPersister.sharedInstance.mergeSync(entityName: "location",
-                                                  attributes: ["latitude": location.coordinate.latitude,
+                                                  attributes: ["latitude": location.coordinate.latitude + STMLocation.test,
                                                                "longitude": location.coordinate.longitude,
                                                                "routeId": routeId])
             
-            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
+//            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
             
             print(locations.first!.coordinate)
         }

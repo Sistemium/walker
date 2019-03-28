@@ -31,6 +31,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet var mapView: MKMapView!
     
+    var timer = Timer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
@@ -39,7 +41,10 @@ class ViewController: UIViewController, MKMapViewDelegate {
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
         self.startProcessing().then(self.drawAllPolylines)
-        NotificationCenter.default.addObserver(self, selector: #selector(didCreateLocation), name: .didCreateLocation, object: nil)
+        timer = Timer.scheduledTimer(withTimeInterval: STMConstants.AVERAGE_HUMAN_SPEED * STMConstants.ACCURACY, repeats:true, block:{[unowned self] _ in
+            self.startProcessing().then(self.drawAllPolylines)
+        })
+//        NotificationCenter.default.addObserver(self, selector: #selector(didCreateLocation), name: .didCreateLocation, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -47,37 +52,51 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
     }
     
-    @objc func didCreateLocation(){
-        
-        self.startProcessing().then(self.drawAllPolylines)
-        
-    }
+//    @objc func didCreateLocation(){
+//    
+//        self.startProcessing().then(self.drawAllPolylines)
+//        
+//    }
+    
+    var lastDrawnPolygonId = ""
+    var coordinates:[Coordinate] = []
 
-    func drawAllPolylines(routeArray:Array<Dictionary<String, Bindable>>? = nil){
-        
-        let oldOverlays = self.mapView.overlays
-        
-        let routes = STMPersister.sharedInstance.findSync(entityName: "processedLocation", groupBy:"polygonId")
+    func drawAllPolylines(locations:Array<Dictionary<String, Any>>? = nil){
         
         var polygons: [Polygon] = []
         
-        for route in routes {
+        let locations = locations ?? STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"id")
 
-            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr:"polygonId = '\(route["polygonId"] as! String)'")
-
-            var coordinates = locations.map{
-                return Coordinate(x: CLLocationDegrees($0["longitude"] as! Double), y: CLLocationDegrees($0["latitude"] as! Double))
+        for location in locations {
+            
+            if lastDrawnPolygonId != location["polygonId"] as! String {
+                
+                lastDrawnPolygonId = location["polygonId"] as! String
+                
+                if (coordinates.count > 1) {
+                    
+                    polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
+                    
+                }
+                
+                coordinates = []
+                
             }
             
-            if (coordinates.count == 1){
-                
-                coordinates.append(coordinates[0])
-                
-            }
+            let coordinate = Coordinate(x: CLLocationDegrees(location["longitude"] as! Double), y: CLLocationDegrees(location["latitude"] as! Double))
 
-            polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
+            coordinates.append(coordinate)
             
         }
+        
+        if (coordinates.count > 1) {
+            
+            polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
+            
+            coordinates = [coordinates.last!]
+            
+        }
+        
         
         polygons = unionPolygons(polygons: polygons)
         
@@ -89,83 +108,65 @@ class ViewController: UIViewController, MKMapViewDelegate {
             }
             
         }
-        
-        DispatchQueue.main.async() {
-            [unowned self] in
-            self.mapView.removeOverlays(oldOverlays)
-        }
-        
+
     }
     
     var lastProcessedRouteId = ""
     var polygonId = ""
     
-    func startProcessing() -> Promise<Array<Dictionary<String, String>>>{
+    func startProcessing() -> Promise<Array<Dictionary<String, Any>>>{
         
-        return Promise<Array<Dictionary<String, String>>>(on: .global()) { fulfill, reject in
+        return Promise<Array<Dictionary<String, Any>>>(on: .global()) { fulfill, reject in
             
-            var result:Array<Dictionary<String, String>> = []
+            var result:Array<Dictionary<String, Any>> = []
             
-            let routes = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "id > \(self.lastProcessedId)", groupBy:"routeId", orderBy:"id")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "id > \(self.lastProcessedId)", orderBy:"id")
             
-            for route in routes {
+            for location in locations{
                 
-                let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr:"routeId = '\(route["routeId"] as! String)'", orderBy:"id")
-                
-                if self.lastProcessedRouteId != route["routeId"] as! String {
+                if self.lastProcessedRouteId != location["routeId"] as! String {
                     
-                    self.lastProcessedRouteId = route["routeId"] as! String
+                    self.lastProcessedRouteId = location["routeId"] as! String
                     
                     self.polygonId = UUID().uuidString
                     
                 }
                 
-                var polygonCount = 0
+                let coordinate = CLLocationCoordinate2D(latitude: location["latitude"] as! Double, longitude: location["longitude"] as! Double)
                 
-                for location in locations{
+                let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: STMConstants.ACCURACY / 2, longitudinalMeters: STMConstants.ACCURACY / 2)
+                
+                let coordinate1 = CLLocationCoordinate2D(latitude: coordinate.latitude + region.span.latitudeDelta, longitude: coordinate.longitude + region.span.longitudeDelta)
+                
+                let coordinate2 = CLLocationCoordinate2D(latitude: coordinate.latitude - region.span.latitudeDelta, longitude: coordinate.longitude - region.span.longitudeDelta)
+                
+                let similar = STMPersister.sharedInstance.findSync(entityName: "processedLocation",
+                                                                   whereExpr: "latitude > \(coordinate2.latitude) "
+                                                                    + "and latitude < \(coordinate1.latitude) "
+                                                                    + "and longitude > \(coordinate2.longitude) "
+                                                                    + "and longitude < \(coordinate1.longitude) "
+                )
+                
+                if (similar.count > 0){
                     
-                    let coordinate = CLLocationCoordinate2D(latitude: location["latitude"] as! Double, longitude: location["longitude"] as! Double)
-                    
-                    let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: STMConstants.ACCURACY / 2, longitudinalMeters: STMConstants.ACCURACY / 2)
-                    
-                    let coordinate1 = CLLocationCoordinate2D(latitude: coordinate.latitude + region.span.latitudeDelta, longitude: coordinate.longitude + region.span.longitudeDelta)
-                    
-                    let coordinate2 = CLLocationCoordinate2D(latitude: coordinate.latitude - region.span.latitudeDelta, longitude: coordinate.longitude - region.span.longitudeDelta)
-                    
-                    let similar = STMPersister.sharedInstance.findSync(entityName: "processedLocation",
-                                                         whereExpr: "latitude > \(coordinate2.latitude) "
-                                                            + "and latitude < \(coordinate1.latitude) "
-                                                            + "and longitude > \(coordinate2.longitude) "
-                                                            + "and longitude < \(coordinate1.longitude) "
-                    )
-                    
-                    if (similar.count > 0){
-                        
-                        self.polygonId = UUID().uuidString
-                        
-                        polygonCount = 0
-                        
-                    }
-                    
-                    if (similar.count == 0){
-                        
-                        if (polygonCount == 0){
-                            
-                            result.append(["polygonId": self.polygonId])
-                            
-                        }
-
-                        STMPersister.sharedInstance.mergeSync(entityName: "processedLocation", attributes: ["id": location["id"] as! Int64,
-                                                                                                            "latitude": location["latitude"] as! Double,
-                                                                                                            "longitude": location["longitude"] as! Double,
-                                                                                                            "polygonId": self.polygonId])
-                        polygonCount += 1
-                        
-                    }
-                    
-                    self.lastProcessedId = location["id"] as! Int64
+                    self.polygonId = UUID().uuidString
                     
                 }
+                
+                if (similar.count == 0){
+                    
+                    let atr = ["id": location["id"] as! Int64,
+                               "latitude": location["latitude"] as! Double,
+                               "longitude": location["longitude"] as! Double,
+                               "polygonId": self.polygonId] as [String : Any]
+                    
+                    STMPersister.sharedInstance.mergeSync(entityName: "processedLocation", attributes: atr as! Dictionary<String, Bindable>)
+                    
+                    result.append(atr)
+                    
+                }
+                
+                self.lastProcessedId = location["id"] as! Int64
                 
             }
             
