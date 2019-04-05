@@ -7,6 +7,7 @@
 //
 
 import CoreLocation
+import UIKit
 
 class STMLocation:NSObject, CLLocationManagerDelegate{
     
@@ -22,8 +23,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
         super.init()
         locationManager.delegate = self
         locationManager.distanceFilter = STMConstants.ACCURACY
-//        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-//        locationManager.showsBackgroundLocationIndicator = true
+
     }
     
     func startTracking(){
@@ -57,11 +57,12 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
 //            STMLocation.test += 0.0001
             STMPersister.sharedInstance.mergeSync(entityName: "location",
                                                   attributes: ["latitude": location.coordinate.latitude + STMLocation.test,
+                                                               "userId": UIDevice.current.identifierForVendor!.uuidString,
                                                                "longitude": location.coordinate.longitude,
                                                                "routeId": routeId])
             
 //            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
-            
+            STMSyncer.sharedInstance.startSyncing()
             print(locations.first!.coordinate)
         }
     }

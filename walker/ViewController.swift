@@ -158,6 +158,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
                     let atr = ["id": location["id"] as! Int64,
                                "latitude": location["latitude"] as! Double,
                                "longitude": location["longitude"] as! Double,
+                               "timestamp": location["timestamp"] as! String,
                                "polygonId": self.polygonId] as [String : Any]
                     
                     STMPersister.sharedInstance.mergeSync(entityName: "processedLocation", attributes: atr as! Dictionary<String, Bindable>)

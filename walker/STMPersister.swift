@@ -45,7 +45,7 @@ class STMPersister{
         
         var _attributes = attributes
         
-        _attributes["ts"] = Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
+        _attributes["timestamp"] = Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
         
         queue.sync {
             let _ = try? database.insertInto(
@@ -56,14 +56,24 @@ class STMPersister{
         
     }
     
+    func updateSync(entityName: String, columns:[String], values: [Bindable?], whereExpr: String? = nil, parameters: [Bindable?] = []) {
+        
+        queue.sync {
+            let _ = try? database.update(entityName, columns: columns, values: values, whereExpr: whereExpr, parameters: parameters)
+        }
+        
+    }
+    
     func checkModelMapping(){
         
         let _ = try? database.createTable("location", definitions: [
-            "id INTEGER PRIMARY KEY",
+            "id INTEGER PRIMARY KEY AUTOINCREMENT",
+            "_id TEXT",
+            "userId TEXT",
             "latitude REAL",
             "longitude REAL",
             "routeId TEXT",
-            "ts TEXT"
+            "timestamp TEXT"
             ])
         
         let _ = try? database.createTable("processedLocation", definitions: [
@@ -71,7 +81,7 @@ class STMPersister{
             "latitude REAL",
             "longitude REAL",
             "polygonId TEXT",
-            "ts TEXT"
+            "timestamp TEXT"
             ])
         
     }
