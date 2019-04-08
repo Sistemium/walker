@@ -84,6 +84,11 @@ class STMPersister{
             "timestamp TEXT"
             ])
         
+        let _ = try? database.createTable("clienеEntity", definitions: [
+            "name TEXT PRIMARY KEY",
+            "offset TEXT"
+            ])
+        
     }
     
 }
