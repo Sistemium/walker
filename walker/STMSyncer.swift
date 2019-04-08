@@ -26,7 +26,8 @@ class STMSyncer{
                 
                 let response = Just.post(
                     "http://" + STMConstants.API_URL + "/location",
-                    json: unsyncedData
+                    json: unsyncedData,
+                    timeout :2.0
                 )
                 
                 if (!response.ok){
