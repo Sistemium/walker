@@ -23,6 +23,7 @@ class STMSyncer{
     
     private func receiveData(){
         
+        Just.get("http://" + STMConstants.API_URL + "/location", timeout: STMConstants.HTTP_TIMEOUT)
         
         
     }
@@ -42,7 +43,7 @@ class STMSyncer{
                 let response = Just.post(
                     "http://" + STMConstants.API_URL + "/location",
                     json: unsyncedData,
-                    timeout :2.0
+                    timeout :STMConstants.HTTP_TIMEOUT
                 )
                 
                 if (!response.ok){
