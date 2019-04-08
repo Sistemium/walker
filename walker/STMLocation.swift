@@ -39,7 +39,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
         locationManager.startUpdatingLocation()
         
         tracking = true
-        
+                
     }
     
     func stopTracking(){

@@ -14,6 +14,21 @@ class STMSyncer{
     
     func startSyncing(){
         
+        receiveData()
+        
+        sendData()
+        
+        
+    }
+    
+    private func receiveData(){
+        
+        
+        
+    }
+    
+    private func sendData(){
+        
         let limit = 1000
         
         var unsyncedData: Array<Dictionary<String, Any>>
@@ -53,7 +68,6 @@ class STMSyncer{
             }
             
         } while unsyncedData.count > 0
-        
         
     }
 
