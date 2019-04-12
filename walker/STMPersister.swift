@@ -46,7 +46,7 @@ class STMPersister{
         var _attributes = attributes
         
         _attributes["timestamp"] = Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
-        
+                
         queue.sync {
             let _ = try? database.insertInto(
                 entityName,
@@ -56,19 +56,25 @@ class STMPersister{
         
     }
     
-    func updateSync(entityName: String, columns:[String], values: [Bindable?], whereExpr: String? = nil, parameters: [Bindable?] = []) {
+    @discardableResult
+    func updateSync(entityName: String, columns:[String], values: [Bindable?], whereExpr: String? = nil, parameters: [Bindable?] = []) -> Int {
+        
+        var result = 0
         
         queue.sync {
-            let _ = try? database.update(entityName, columns: columns, values: values, whereExpr: whereExpr, parameters: parameters)
+            result = try! database.update(entityName, columns: columns, values: values, whereExpr: whereExpr, parameters: parameters) 
         }
+        
+        return result
         
     }
     
     func checkModelMapping(){
         
         let _ = try? database.createTable("location", definitions: [
-            "id INTEGER PRIMARY KEY AUTOINCREMENT",
+            "id TEXT PRIMARY KEY",
             "_id TEXT",
+            "ord INTEGER",
             "userId TEXT",
             "latitude REAL",
             "longitude REAL",
@@ -77,16 +83,17 @@ class STMPersister{
             ])
         
         let _ = try? database.createTable("processedLocation", definitions: [
-            "id INTEGER PRIMARY KEY",
+            "id TEXT PRIMARY KEY",
+            "ord INTEGER",
             "latitude REAL",
             "longitude REAL",
             "polygonId TEXT",
             "timestamp TEXT"
             ])
         
-        let _ = try? database.createTable("clienеEntity", definitions: [
+        let _ = try? database.createTable("clientEntity", definitions: [
             "name TEXT PRIMARY KEY",
-            "offset TEXT"
+            "offset INTEGER"
             ])
         
     }

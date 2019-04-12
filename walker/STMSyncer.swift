@@ -14,16 +14,41 @@ class STMSyncer{
     
     func startSyncing(){
         
-        receiveData()
+//        receiveData()
         
-        sendData()
+//        sendData()
         
         
     }
     
     private func receiveData(){
         
-        Just.get("http://" + STMConstants.API_URL + "/location", timeout: STMConstants.HTTP_TIMEOUT)
+        var offset:Int = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int ?? 0
+        
+        let response = Just.get("http://" + STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT)
+        
+        if (response.ok){
+            
+            offset += (response.json! as! Array<Any>).count
+            
+            for location in (response.json! as! Array<Dictionary<String,Any>>) {
+                
+                print("")
+                
+            }
+         
+            let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
+            
+            if (result == 0){
+                
+                STMPersister.sharedInstance.mergeSync(entityName: "clientEntity", attributes: ["offset": offset, "name": "location"])
+                
+            }
+            
+            
+        }
+        
+        print(response.json!)
         
         
     }
@@ -60,7 +85,7 @@ class STMSyncer{
                         
                         let index = dic["index"]! as! Int
                         
-                        STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = \(unsyncedData[index]["id"]!)")
+                        let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = \(unsyncedData[index]["id"]!)")
                         
                     }
                     

@@ -15,17 +15,17 @@ import Squeal
 
 class ViewController: UIViewController, MKMapViewDelegate {
     
-    var lastProcessedId: Int64 {
+    var lastProcessedOrd: Int64 {
         get {
             
-            if let value = UserDefaults.standard.object(forKey: "lastProcessedId") as? Int64 {
+            if let value = UserDefaults.standard.object(forKey: "lastProcessedOrd") as? Int64 {
                 return value
             }
             
             return 0
         }
         set(id) {
-            UserDefaults.standard.set(id, forKey: "lastProcessedId")
+            UserDefaults.standard.set(id, forKey: "lastProcessedOrd")
         }
     }
     
@@ -65,7 +65,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         var polygons: [Polygon] = []
         
-        let locations = locations ?? STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"id")
+        let locations = locations ?? STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"ord")
 
         for location in locations {
             
@@ -120,7 +120,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             
             var result:Array<Dictionary<String, Any>> = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "id > \(self.lastProcessedId)", orderBy:"id")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "id > \(self.lastProcessedOrd)", orderBy:"id")
             
             for location in locations{
                 
@@ -155,10 +155,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 
                 if (similar.count == 0){
                     
-                    let atr = ["id": location["id"] as! Int64,
+                    let atr = ["id": location["id"] as! String,
                                "latitude": location["latitude"] as! Double,
                                "longitude": location["longitude"] as! Double,
                                "timestamp": location["timestamp"] as! String,
+                               "ord": location["ord"] as! Int64,
                                "polygonId": self.polygonId] as [String : Any]
                     
                     STMPersister.sharedInstance.mergeSync(entityName: "processedLocation", attributes: atr as! Dictionary<String, Bindable>)
@@ -167,7 +168,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
                     
                 }
                 
-                self.lastProcessedId = location["id"] as! Int64
+                self.lastProcessedOrd = location["ord"] as! Int64
                 
             }
             

@@ -22,7 +22,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.distanceFilter = STMConstants.ACCURACY
+//        locationManager.distanceFilter = STMConstants.ACCURACY
 
     }
     
@@ -51,17 +51,29 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     }
     
     static var test = 0.0
+    static var ord:Int64? = nil
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locations.forEach{ location in
-//            STMLocation.test += 0.0001
-            STMPersister.sharedInstance.mergeSync(entityName: "location",
-                                                  attributes: ["latitude": location.coordinate.latitude + STMLocation.test,
-                                                               "userId": UIDevice.current.identifierForVendor!.uuidString,
-                                                               "longitude": location.coordinate.longitude,
-                                                               "routeId": routeId])
+            STMLocation.test += 0.0001
             
-//            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
+            if STMLocation.ord == nil{
+                
+                STMLocation.ord = STMPersister.sharedInstance.findSync(entityName: "location", orderBy: "ord DESC", limit: 1).first?["ord"] as? Int64 ?? Int64(0)
+                
+            }
+            
+            STMPersister.sharedInstance.mergeSync(entityName: "location",
+                                                  attributes: [
+                                                    "id": UUID().uuidString,
+                                                    "latitude": location.coordinate.latitude + STMLocation.test,
+                                                    "userId": UIDevice.current.identifierForVendor!.uuidString,
+                                                    "longitude": location.coordinate.longitude,
+                                                    "routeId": routeId,
+                                                    "ord": STMLocation.ord! + Int64(1)
+                ])
+            
+            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
             STMSyncer.sharedInstance.startSyncing()
             print(locations.first!.coordinate)
         }
