@@ -16,19 +16,22 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     private let locationManager = CLLocationManager()
     
     private var routeId = ""
+    private var ord:Int64 = 0
     
     public private(set) var tracking = false
     
     override init() {
         super.init()
         locationManager.delegate = self
-//        locationManager.distanceFilter = STMConstants.ACCURACY
+        locationManager.distanceFilter = STMConstants.ACCURACY
 
     }
     
     func startTracking(){
         
         routeId = UUID().uuidString
+        
+        ord = 0
         
         locationManager.requestAlwaysAuthorization()
 
@@ -51,17 +54,12 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     }
     
     static var test = 0.0
-    static var ord:Int64? = nil
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locations.forEach{ location in
-            STMLocation.test += 0.0001
+//            STMLocation.test += 0.0001
             
-            if STMLocation.ord == nil{
-                
-                STMLocation.ord = STMPersister.sharedInstance.findSync(entityName: "location", orderBy: "ord DESC", limit: 1).first?["ord"] as? Int64 ?? Int64(0)
-                
-            }
+            ord += 1
             
             STMPersister.sharedInstance.mergeSync(entityName: "location",
                                                   attributes: [
@@ -70,7 +68,8 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                                                     "userId": UIDevice.current.identifierForVendor!.uuidString,
                                                     "longitude": location.coordinate.longitude,
                                                     "routeId": routeId,
-                                                    "ord": STMLocation.ord! + Int64(1)
+                                                    "timestamp": Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS"),
+                                                    "ord": ord
                 ])
             
             NotificationCenter.default.post(name: .didCreateLocation, object: nil)

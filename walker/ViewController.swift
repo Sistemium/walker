@@ -120,7 +120,9 @@ class ViewController: UIViewController, MKMapViewDelegate {
             
             var result:Array<Dictionary<String, Any>> = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "id > \(self.lastProcessedOrd)", orderBy:"id")
+            let group = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "routeId > '\(self.lastProcessedRouteId)'", groupBy: "routeId", orderBy: "timestamp")
+            
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "ord > \(self.lastProcessedOrd)", orderBy:"ord")
             
             for location in locations{
                 

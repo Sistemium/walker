@@ -7,6 +7,7 @@
 //
 
 import Just
+import Squeal
 
 class STMSyncer{
     
@@ -14,11 +15,10 @@ class STMSyncer{
     
     func startSyncing(){
         
-//        receiveData()
+        receiveData()
         
-//        sendData()
-        
-        
+        sendData()
+    
     }
     
     private func receiveData(){
@@ -33,7 +33,19 @@ class STMSyncer{
             
             for location in (response.json! as! Array<Dictionary<String,Any>>) {
                 
-                print("")
+                var _location = location
+                
+                _location.removeValue(forKey: "cts")
+                
+                _location.removeValue(forKey: "ts")
+                
+                let result = STMPersister.sharedInstance.updateSync(entityName: "location", columns: Array(_location.keys), values: Array(_location.values) as! [Bindable], whereExpr: "id = '\(_location["id"]!)'")
+                
+                if (result == 0){
+                    
+                    STMPersister.sharedInstance.mergeSync(entityName: "location", attributes: _location as! Dictionary<String, Bindable>)
+                    
+                }
                 
             }
          
@@ -48,9 +60,6 @@ class STMSyncer{
             
         }
         
-        print(response.json!)
-        
-        
     }
     
     private func sendData(){
@@ -61,7 +70,7 @@ class STMSyncer{
         
         repeat{
             
-            unsyncedData = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", limit:limit)
+            unsyncedData = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", orderBy: "ord", limit:limit)
             
             if (unsyncedData.count > 0){
                 
@@ -85,7 +94,7 @@ class STMSyncer{
                         
                         let index = dic["index"]! as! Int
                         
-                        let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = \(unsyncedData[index]["id"]!)")
+                        let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = '\(unsyncedData[index]["id"]!)'")
                         
                     }
                     

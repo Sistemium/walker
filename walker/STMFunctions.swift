@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Squeal
 
 extension Date {
     
@@ -23,4 +24,20 @@ extension Date {
 
 extension Notification.Name {
     static let didCreateLocation = Notification.Name("didCreateLocation")
+}
+
+extension NSNumber : Bindable {
+    
+    public func bindToStatement(_ statement:Statement, atIndex index:Int) throws {
+        try statement.bindIntValue(Int(truncating: self), atIndex: index)
+    }
+
+}
+
+extension NSString : Bindable {
+    
+    public func bindToStatement(_ statement:Statement, atIndex index:Int) throws {
+        try statement.bindStringValue(self as String, atIndex: index)
+    }
+    
 }

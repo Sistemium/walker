@@ -43,14 +43,11 @@ class STMPersister{
     
     func mergeSync(entityName: String, attributes:Dictionary<String, Bindable>){
         
-        var _attributes = attributes
-        
-        _attributes["timestamp"] = Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
-                
         queue.sync {
+            
             let _ = try? database.insertInto(
                 entityName,
-                values: _attributes
+                values: attributes
             )
         }
         
