@@ -35,51 +35,43 @@ class STMSyncer{
         
         var offset:Int = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int ?? 0
         
-        var responseSize = 0
-        
-        repeat{
+        Just.get("http://" + STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
             
-            Just.get("http://" + STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
+            if (response.ok){
                 
-                if (response.ok){
+                offset += (response.json! as! Array<Any>).count
+                
+                for location in (response.json! as! Array<Dictionary<String,Any>>) {
                     
-                    responseSize = (response.json! as! Array<Any>).count
+                    var _location = location
                     
-                    offset += responseSize
+                    _location.removeValue(forKey: "cts")
                     
-                    for location in (response.json! as! Array<Dictionary<String,Any>>) {
-                        
-                        var _location = location
-                        
-                        _location.removeValue(forKey: "cts")
-                        
-                        _location.removeValue(forKey: "ts")
-                        
-                        let result = STMPersister.sharedInstance.updateSync(entityName: "location", columns: Array(_location.keys), values: Array(_location.values) as! [Bindable], whereExpr: "id = '\(_location["id"]!)'")
-                        
-                        if (result == 0){
-                            
-                            STMPersister.sharedInstance.mergeSync(entityName: "location", attributes: _location as! Dictionary<String, Bindable>)
-                            
-                        }
-                        
-                    }
+                    _location.removeValue(forKey: "ts")
                     
-                    let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
+                    let result = STMPersister.sharedInstance.updateSync(entityName: "location", columns: Array(_location.keys), values: Array(_location.values) as! [Bindable], whereExpr: "id = '\(_location["id"]!)'")
                     
                     if (result == 0){
                         
-                        STMPersister.sharedInstance.mergeSync(entityName: "clientEntity", attributes: ["offset": offset, "name": "location"])
+                        STMPersister.sharedInstance.mergeSync(entityName: "location", attributes: _location as! Dictionary<String, Bindable>)
                         
                     }
                     
-                    self.receiving = false
+                }
+                
+                let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
+                
+                if (result == 0){
+                    
+                    STMPersister.sharedInstance.mergeSync(entityName: "clientEntity", attributes: ["offset": offset, "name": "location"])
                     
                 }
                 
+                self.receiving = false
+                
             }
             
-        } while responseSize == 1000
+        }
         
     }
     
@@ -89,47 +81,41 @@ class STMSyncer{
         
         let limit = 1000
         
-        var unsyncedData: Array<Dictionary<String, Any>>
-        
-        repeat{
+        var unsyncedData: Array<Dictionary<String, Any>> = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", orderBy: "timestamp", limit:limit)
             
-            unsyncedData = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", orderBy: "timestamp", limit:limit)
+        if (unsyncedData.count > 0){
             
-            if (unsyncedData.count > 0){
+            Just.post(
+                "http://" + STMConstants.API_URL + "/location",
+                json: unsyncedData,
+                timeout :STMConstants.HTTP_TIMEOUT
+            ){ response in
                 
-                Just.post(
-                    "http://" + STMConstants.API_URL + "/location",
-                    json: unsyncedData,
-                    timeout :STMConstants.HTTP_TIMEOUT
-                ){ response in
+                if (!response.ok){
                     
-                    if (!response.ok){
+                    print("sync Error: \(response.error?.localizedDescription ?? "")")
+                    
+                    return
+                    
+                } else {
+                    
+                    for dic in (response.json! as! Dictionary<String, Any>)["upserted"]! as! Array<Dictionary<String, Any>>{
                         
-                        print("sync Error: \(response.error?.localizedDescription ?? "")")
+                        let id = dic["_id"]! as! String
                         
-                        return
+                        let index = dic["index"]! as! Int
                         
-                    } else {
-                        
-                        for dic in (response.json! as! Dictionary<String, Any>)["upserted"]! as! Array<Dictionary<String, Any>>{
-                            
-                            let id = dic["_id"]! as! String
-                            
-                            let index = dic["index"]! as! Int
-                            
-                            let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = '\(unsyncedData[index]["id"]!)'")
-                            
-                        }
+                        let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = '\(unsyncedData[index]["id"]!)'")
                         
                     }
                     
-                    self.sending = false
-                    
                 }
+                
+                self.sending = false
                 
             }
             
-        } while unsyncedData.count > 0
+        }
         
     }
 
