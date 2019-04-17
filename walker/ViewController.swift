@@ -29,6 +29,20 @@ class ViewController: UIViewController, MKMapViewDelegate {
         }
     }
     
+    var lastProcessedOrd: Int64 {
+        get {
+            
+            if let value = UserDefaults.standard.object(forKey: "lastProcessedOrd") as? Int64 {
+                return value
+            }
+            
+            return 0
+        }
+        set(id) {
+            UserDefaults.standard.set(id, forKey: "lastProcessedOrd")
+        }
+    }
+    
     @IBOutlet var mapView: MKMapView!
     
     var timer = Timer()
@@ -65,7 +79,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         var polygons: [Polygon] = []
         
-        let locations = locations ?? STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"ord")
+        let locations = locations ?? STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
 
         for location in locations {
             
@@ -123,13 +137,15 @@ class ViewController: UIViewController, MKMapViewDelegate {
             
             for group in groups{
                 
-                let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "routeId = '\(group["routeId"]!)'", orderBy:"ord")
+                let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "routeId = '\(group["routeId"]!)' and ord > \(self.lastProcessedOrd)", orderBy:"ord")
                 
                 for location in locations{
                     
                     if self.lastProcessedRouteId != location["routeId"] as! String {
                         
                         self.lastProcessedRouteId = location["routeId"] as! String
+                        
+                        self.lastProcessedOrd = 0
                         
                         self.polygonId = UUID().uuidString
                         
@@ -170,6 +186,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
                         result.append(atr)
                         
                     }
+                    
+                    self.lastProcessedOrd = location["ord"] as! Int64
                                         
                 }
                 

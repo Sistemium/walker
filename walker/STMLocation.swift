@@ -57,7 +57,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locations.forEach{ location in
-            STMLocation.test += 0.0001
+            STMLocation.test -= 0.0001
             
             ord += 1
             
