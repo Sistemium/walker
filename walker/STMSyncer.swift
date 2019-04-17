@@ -13,7 +13,15 @@ class STMSyncer{
     
     static let sharedInstance = STMSyncer()
     
+    private var sending = false, receiving = false
+    
     func startSyncing(){
+        
+        if (sending || receiving) {
+            
+            return
+            
+        }
         
         receiveData()
         
@@ -23,46 +31,61 @@ class STMSyncer{
     
     private func receiveData(){
         
+        receiving = true
+        
         var offset:Int = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int ?? 0
         
-        let response = Just.get("http://" + STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT)
+        var responseSize = 0
         
-        if (response.ok){
+        repeat{
             
-            offset += (response.json! as! Array<Any>).count
-            
-            for location in (response.json! as! Array<Dictionary<String,Any>>) {
+            Just.get("http://" + STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
                 
-                var _location = location
-                
-                _location.removeValue(forKey: "cts")
-                
-                _location.removeValue(forKey: "ts")
-                
-                let result = STMPersister.sharedInstance.updateSync(entityName: "location", columns: Array(_location.keys), values: Array(_location.values) as! [Bindable], whereExpr: "id = '\(_location["id"]!)'")
-                
-                if (result == 0){
+                if (response.ok){
                     
-                    STMPersister.sharedInstance.mergeSync(entityName: "location", attributes: _location as! Dictionary<String, Bindable>)
+                    responseSize = (response.json! as! Array<Any>).count
+                    
+                    offset += responseSize
+                    
+                    for location in (response.json! as! Array<Dictionary<String,Any>>) {
+                        
+                        var _location = location
+                        
+                        _location.removeValue(forKey: "cts")
+                        
+                        _location.removeValue(forKey: "ts")
+                        
+                        let result = STMPersister.sharedInstance.updateSync(entityName: "location", columns: Array(_location.keys), values: Array(_location.values) as! [Bindable], whereExpr: "id = '\(_location["id"]!)'")
+                        
+                        if (result == 0){
+                            
+                            STMPersister.sharedInstance.mergeSync(entityName: "location", attributes: _location as! Dictionary<String, Bindable>)
+                            
+                        }
+                        
+                    }
+                    
+                    let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
+                    
+                    if (result == 0){
+                        
+                        STMPersister.sharedInstance.mergeSync(entityName: "clientEntity", attributes: ["offset": offset, "name": "location"])
+                        
+                    }
+                    
+                    self.receiving = false
                     
                 }
                 
             }
-         
-            let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
             
-            if (result == 0){
-                
-                STMPersister.sharedInstance.mergeSync(entityName: "clientEntity", attributes: ["offset": offset, "name": "location"])
-                
-            }
-            
-            
-        }
+        } while responseSize == 1000
         
     }
     
     private func sendData(){
+        
+        sending = true
         
         let limit = 1000
         
@@ -70,33 +93,37 @@ class STMSyncer{
         
         repeat{
             
-            unsyncedData = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", orderBy: "ord", limit:limit)
+            unsyncedData = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", orderBy: "timestamp", limit:limit)
             
             if (unsyncedData.count > 0){
                 
-                let response = Just.post(
+                Just.post(
                     "http://" + STMConstants.API_URL + "/location",
                     json: unsyncedData,
                     timeout :STMConstants.HTTP_TIMEOUT
-                )
-                
-                if (!response.ok){
+                ){ response in
                     
-                    print("sync Error: \(response.error?.localizedDescription ?? "")")
-                    
-                    return
-                    
-                } else {
-                    
-                    for dic in (response.json! as! Dictionary<String, Any>)["upserted"]! as! Array<Dictionary<String, Any>>{
+                    if (!response.ok){
                         
-                        let id = dic["_id"]! as! String
+                        print("sync Error: \(response.error?.localizedDescription ?? "")")
                         
-                        let index = dic["index"]! as! Int
+                        return
                         
-                        let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = '\(unsyncedData[index]["id"]!)'")
+                    } else {
+                        
+                        for dic in (response.json! as! Dictionary<String, Any>)["upserted"]! as! Array<Dictionary<String, Any>>{
+                            
+                            let id = dic["_id"]! as! String
+                            
+                            let index = dic["index"]! as! Int
+                            
+                            let _ = STMPersister.sharedInstance.updateSync(entityName: "location", columns: ["_id"], values: [id], whereExpr: "id = '\(unsyncedData[index]["id"]!)'")
+                            
+                        }
                         
                     }
+                    
+                    self.sending = false
                     
                 }
                 
