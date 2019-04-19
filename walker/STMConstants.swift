@@ -11,7 +11,7 @@ class STMConstants{
     static let POLYGON_SIZE = 0.0002
     static let ACCURACY = 15.0
     static let AVERAGE_HUMAN_SPEED = 1.4
-    static let API_URL = "192.168.196.29:9330/api"
+    static let API_URL = "https://walker.sistemium.com/api"
     static let HTTP_TIMEOUT = 2.0
     
 }

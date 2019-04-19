@@ -35,7 +35,7 @@ class STMSyncer{
         
         var offset:Int = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int ?? 0
         
-        Just.get("http://" + STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
+        Just.get(STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
             
             if (!response.ok){
                 
@@ -92,7 +92,7 @@ class STMSyncer{
         if (unsyncedData.count > 0){
             
             Just.post(
-                "http://" + STMConstants.API_URL + "/location",
+                STMConstants.API_URL + "/location",
                 json: unsyncedData,
                 timeout :STMConstants.HTTP_TIMEOUT
             ){ response in
