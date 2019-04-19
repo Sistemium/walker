@@ -35,27 +35,29 @@ class ViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.showsUserLocation = true
-        mapView.setUserTrackingMode(.followWithHeading, animated: true)
         mapView.delegate = self
+        
+        mapView.showsCompass = false
+        
+        let buttonItem = MKUserTrackingButton(mapView: mapView)
+        let screenSize: CGRect = UIScreen.main.bounds
+        buttonItem.frame = CGRect(origin: CGPoint(x: screenSize.width - 45, y: 50), size: CGSize(width: 35, height: 35))
+        
+        mapView.addSubview(buttonItem)
+        
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
         self.startProcessing().then(self.drawAllPolylines)
         timer = Timer.scheduledTimer(withTimeInterval: STMConstants.AVERAGE_HUMAN_SPEED * STMConstants.ACCURACY, repeats:true, block:{[unowned self] _ in
             self.startProcessing().then(self.drawAllPolylines)
         })
-        //        NotificationCenter.default.addObserver(self, selector: #selector(didCreateLocation), name: .didCreateLocation, object: nil)
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
     }
-    
-    //    @objc func didCreateLocation(){
-    //
-    //        self.startProcessing().then(self.drawAllPolylines)
-    //
-    //    }
     
     var lastDrawnPolygonId = ""
     var coordinates:[Coordinate] = []
