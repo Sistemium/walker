@@ -12,6 +12,6 @@ class STMConstants{
     static let ACCURACY = 15.0
     static let AVERAGE_HUMAN_SPEED = 1.4
     static let API_URL = "https://walker.sistemium.com/api"
-    static let HTTP_TIMEOUT = 2.0
+    static let HTTP_TIMEOUT = 30.0
     
 }

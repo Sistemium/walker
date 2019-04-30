@@ -36,14 +36,17 @@ class ViewController: UIViewController, MKMapViewDelegate {
         super.viewDidLoad()
         mapView.showsUserLocation = true
         mapView.delegate = self
+        mapView.setUserTrackingMode(.followWithHeading, animated: true)
         
         mapView.showsCompass = false
         
-        let buttonItem = MKUserTrackingButton(mapView: mapView)
         let screenSize: CGRect = UIScreen.main.bounds
+        let buttonItem = MKUserTrackingButton(mapView: mapView)
         buttonItem.frame = CGRect(origin: CGPoint(x: screenSize.width - 45, y: 50), size: CGSize(width: 35, height: 35))
-        
         mapView.addSubview(buttonItem)
+        let compassItem = MKCompassButton(mapView: mapView)
+        compassItem.frame = CGRect(origin: CGPoint(x: screenSize.width - 45, y: 100), size: CGSize(width: 35, height: 35))
+        mapView.addSubview(compassItem)
         
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
@@ -114,15 +117,26 @@ class ViewController: UIViewController, MKMapViewDelegate {
     
     var lastProcessedRouteId = ""
     var polygonId = ""
+    var processing = false
     
     func startProcessing() -> Promise<Array<Dictionary<String, Any>>>{
         
         return Promise<Array<Dictionary<String, Any>>>(on: .global()) { fulfill, reject in
             
+            if (self.processing){
+                
+                fulfill([])
+                
+                return
+                
+            }
+            
+            self.processing = true
+            
             var result:Array<Dictionary<String, Any>> = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(self.lastProcessedTimestamp)'", orderBy:"routeId, ord")
-            
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(self.lastProcessedTimestamp)'", orderBy:"timestamp")
+                        
             for location in locations{
                 
                 if self.lastProcessedRouteId != location["routeId"] as! String {
@@ -155,7 +169,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 }
                 
                 if (similar.count == 0){
-                    
+                                        
                     let atr = ["id": location["id"] as! String,
                                "latitude": location["latitude"] as! Double,
                                "longitude": location["longitude"] as! Double,
@@ -173,9 +187,12 @@ class ViewController: UIViewController, MKMapViewDelegate {
                 
             }
             
+            self.processing = false
             fulfill(result)
             
-        }
+            }.catch({ (Error) in
+                self.processing = false
+            })
         
     }
     

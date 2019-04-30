@@ -33,9 +33,9 @@ class STMSyncer{
         
         receiving = true
         
-        var offset:Int = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int ?? 0
+        var offset:Int64 = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int64 ?? 0
         
-        Just.get(STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"cts", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
+        Just.get(STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"timestamp", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
             
             if (!response.ok){
                 
@@ -47,11 +47,17 @@ class STMSyncer{
                 
             }
             
-            offset += (response.json! as! Array<Any>).count
+            offset += Int64((response.json! as! Array<Any>).count)
             
             for location in (response.json! as! Array<Dictionary<String,Any>>) {
-                
+    
                 var _location = location
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                let date = dateFormatter.date(from: _location["timestamp"] as! String)!.toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
+                
+                _location["timestamp"] = date
                 
                 _location.removeValue(forKey: "cts")
                 
@@ -76,6 +82,12 @@ class STMSyncer{
             }
             
             self.receiving = false
+            
+            if ((response.json! as! Array<Dictionary<String,Any>>).count == 1000){
+                
+                self.receiveData()
+                
+            }
             
         }
         
