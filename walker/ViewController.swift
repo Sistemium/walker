@@ -14,7 +14,7 @@ import Squeal
 
 class ViewController: UIViewController, MKMapViewDelegate {
     
-    var lastProcessedTimestamp: String {
+    static var lastProcessedTimestamp: String {
         get {
             
             if let value = UserDefaults.standard.string(forKey: "lastProcessedTimestamp") {
@@ -135,7 +135,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             
             var result:Array<Dictionary<String, Any>> = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(self.lastProcessedTimestamp)'", orderBy:"timestamp")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(ViewController.lastProcessedTimestamp)'", orderBy:"timestamp")
                         
             for location in locations{
                 
@@ -183,7 +183,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
                     
                 }
                 
-                self.lastProcessedTimestamp = location["timestamp"] as! String
+                ViewController.lastProcessedTimestamp = location["timestamp"] as! String
                 
             }
             

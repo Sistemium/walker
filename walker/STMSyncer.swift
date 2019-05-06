@@ -71,6 +71,12 @@ class STMSyncer{
                     
                 }
                 
+                if (_location["timestamp"] as! String > ViewController.lastProcessedTimestamp){
+                    
+                    ViewController.lastProcessedTimestamp = ""
+                    
+                }
+                
             }
             
             let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
