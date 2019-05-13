@@ -22,10 +22,6 @@ extension Date {
     }
 }
 
-extension Notification.Name {
-    static let didCreateLocation = Notification.Name("didCreateLocation")
-}
-
 extension NSNumber : Bindable {
     
     public func bindToStatement(_ statement:Statement, atIndex index:Int) throws {

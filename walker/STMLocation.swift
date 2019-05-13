@@ -72,7 +72,6 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                                                     "ord": ord
                 ])
             
-            NotificationCenter.default.post(name: .didCreateLocation, object: nil)
             STMSyncer.sharedInstance.startSyncing()
             print(locations.first!.coordinate)
         }
