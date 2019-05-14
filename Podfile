@@ -1,14 +1,17 @@
+#Execute line bellow before pod install!!!
+#brew install autoconf automake libtool
+
 platform :ios, '12.1'
 use_frameworks!
 
 target 'walker' do
-  pod 'GEOSwift', '~> 3.1'
-  pod 'Squeal', '~> 1.2'
+  pod "GEOSwift"
+  pod 'Squeal'
   pod 'Firebase/Core'
-  pod 'Fabric', '~> 1.9.0'
-  pod 'Crashlytics', '~> 3.12.0'
-  pod 'PromisesSwift', '~> 1.2.7'
-  pod 'Just', '~> 0.7.1'
+  pod 'Fabric'
+  pod 'Crashlytics'
+  pod 'PromisesSwift'
+  pod 'Just'
 end
 
 post_install do |installer|
