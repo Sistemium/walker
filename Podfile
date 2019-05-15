@@ -1,7 +1,7 @@
 #Execute line bellow before pod install!!!
 #brew install autoconf automake libtool
 
-platform :ios, '12.1'
+platform :ios, '11.0'
 use_frameworks!
 
 target 'walker' do
