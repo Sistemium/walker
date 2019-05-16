@@ -40,13 +40,26 @@ class ViewController: UIViewController, MKMapViewDelegate {
         
         mapView.showsCompass = false
         
-        let screenSize: CGRect = UIScreen.main.bounds
-        let buttonItem = MKUserTrackingButton(mapView: mapView)
-        buttonItem.frame = CGRect(origin: CGPoint(x: screenSize.width - 45, y: 50), size: CGSize(width: 35, height: 35))
-        mapView.addSubview(buttonItem)
+        let userTrackingButton = MKUserTrackingButton(mapView: mapView)
+//        userTrackingButton.layer.backgroundColor = UIColor(named: "translucent")?.cgColor
+//        userTrackingButton.layer.cornerRadius = 5
         let compassItem = MKCompassButton(mapView: mapView)
-        compassItem.frame = CGRect(origin: CGPoint(x: screenSize.width - 45, y: 100), size: CGSize(width: 35, height: 35))
-        mapView.addSubview(compassItem)
+        
+        let stackView = UIStackView(arrangedSubviews: [userTrackingButton, compassItem])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.spacing = 10
+        view.addSubview(stackView)
+        
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+            userTrackingButton.heightAnchor.constraint(equalToConstant: 40),
+            userTrackingButton.widthAnchor.constraint(equalToConstant: 40),
+            compassItem.heightAnchor.constraint(equalToConstant: 40),
+            compassItem.widthAnchor.constraint(equalToConstant: 40),
+            ])
         
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
