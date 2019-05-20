@@ -41,8 +41,11 @@ class ViewController: UIViewController, MKMapViewDelegate {
         mapView.showsCompass = false
         
         let userTrackingButton = MKUserTrackingButton(mapView: mapView)
-//        userTrackingButton.layer.backgroundColor = UIColor(named: "translucent")?.cgColor
-//        userTrackingButton.layer.cornerRadius = 5
+        userTrackingButton.layer.backgroundColor = UIColor(white: 1, alpha: 0.8).cgColor
+        userTrackingButton.layer.borderColor = UIColor.white.cgColor
+        userTrackingButton.layer.borderWidth = 1
+        userTrackingButton.layer.cornerRadius = 5
+        userTrackingButton.translatesAutoresizingMaskIntoConstraints = false
         let compassItem = MKCompassButton(mapView: mapView)
         
         let stackView = UIStackView(arrangedSubviews: [userTrackingButton, compassItem])
@@ -60,6 +63,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
             compassItem.heightAnchor.constraint(equalToConstant: 40),
             compassItem.widthAnchor.constraint(equalToConstant: 40),
             ])
+
         
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
