@@ -12,6 +12,7 @@ target 'walker' do
   pod 'Crashlytics'
   pod 'PromisesSwift'
   pod 'Just'
+  pod 'FloatingPanel'
 end
 
 post_install do |installer|

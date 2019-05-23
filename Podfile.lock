@@ -23,6 +23,7 @@ PODS:
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
+  - FloatingPanel (1.5.1)
   - geos (4.0.1)
   - GEOSwift (4.1.0):
     - geos (= 4.0.1)
@@ -65,6 +66,7 @@ DEPENDENCIES:
   - Crashlytics
   - Fabric
   - Firebase/Core
+  - FloatingPanel
   - GEOSwift
   - Just
   - PromisesSwift
@@ -78,6 +80,7 @@ SPEC REPOS:
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseInstanceID
+    - FloatingPanel
     - geos
     - GEOSwift
     - GoogleAppMeasurement
@@ -95,6 +98,7 @@ SPEC CHECKSUMS:
   FirebaseAnalytics: 1743c5f4de3687d0745709dfdc4b1dea1484f44c
   FirebaseCore: e38f025287b413255a53acc1945d048a112047f7
   FirebaseInstanceID: 0e0348a3c00a734fa376a070f5ad4533ad975cb5
+  FloatingPanel: b2f4fb6f8fea7877954beff8f3f03bb6595ab354
   geos: fd7ff7eaf4ecccdfd7ac4914d0dec2816e3bc441
   GEOSwift: dd3a232c84b4a88384f37db97f9b4cd2b5e05082
   GoogleAppMeasurement: 7f028ea162b72c8f326daec74afc95d94f7a47d6
@@ -105,6 +109,6 @@ SPEC CHECKSUMS:
   PromisesSwift: 37bad6f4daddb02f7c9c531efe91e8b21c13ee2f
   Squeal: f6ca46fb5b7b24c03b0e8c729b038bc4ca964241
 
-PODFILE CHECKSUM: b55be99ff147319f6a10800eb5be4e3b3adb815a
+PODFILE CHECKSUM: dca557cd81093efaac2a66bb7de3a45fe4b02556
 
 COCOAPODS: 1.7.0.rc.2

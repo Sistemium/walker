@@ -11,8 +11,9 @@ import MapKit
 import GEOSwift
 import Promises
 import Squeal
+import FloatingPanel
 
-class ViewController: UIViewController, MKMapViewDelegate {
+class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControllerDelegate {
     
     static var lastProcessedTimestamp: String {
         get {
@@ -31,24 +32,42 @@ class ViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet var mapView: MKMapView!
     
     var timer = Timer()
+    let fpc = FloatingPanelController()
+    let test = Test()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let contentVC = UITableViewController()
+        contentVC.tableView.dataSource = test
+        fpc.delegate = self
+        fpc.set(contentViewController: contentVC)
+        fpc.track(scrollView: contentVC.tableView)
+        fpc.isRemovalInteractionEnabled = true
+        
         mapView.showsUserLocation = true
         mapView.delegate = self
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
-        
         mapView.showsCompass = false
         
         let userTrackingButton = MKUserTrackingButton(mapView: mapView)
         userTrackingButton.layer.backgroundColor = UIColor(white: 1, alpha: 0.8).cgColor
         userTrackingButton.layer.borderColor = UIColor.white.cgColor
-        userTrackingButton.layer.borderWidth = 1
         userTrackingButton.layer.cornerRadius = 5
         userTrackingButton.translatesAutoresizingMaskIntoConstraints = false
+        
         let compassItem = MKCompassButton(mapView: mapView)
         
-        let stackView = UIStackView(arrangedSubviews: [userTrackingButton, compassItem])
+        let infoItem = UIButton(type: .infoLight)
+        infoItem.contentVerticalAlignment = .center
+        infoItem.contentHorizontalAlignment = .center
+        infoItem.layer.backgroundColor = UIColor(white: 1, alpha: 0.8).cgColor
+        infoItem.layer.borderColor = UIColor.white.cgColor
+        infoItem.layer.cornerRadius = 5
+        infoItem.translatesAutoresizingMaskIntoConstraints = false
+        infoItem.addTarget(self, action: #selector(self.getInfo), for: .touchUpInside)
+        
+        let stackView = UIStackView(arrangedSubviews: [infoItem, userTrackingButton, compassItem])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -62,6 +81,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
             userTrackingButton.widthAnchor.constraint(equalToConstant: 40),
             compassItem.heightAnchor.constraint(equalToConstant: 40),
             compassItem.widthAnchor.constraint(equalToConstant: 40),
+            infoItem.heightAnchor.constraint(equalToConstant: 40),
+            infoItem.widthAnchor.constraint(equalToConstant: 40),
             ])
 
         
@@ -257,6 +278,58 @@ class ViewController: UIViewController, MKMapViewDelegate {
             return polygon
         }
         return MKOverlayRenderer()
+    }
+    
+    @objc func getInfo(){
+        
+        if (fpc.parent == nil){
+            
+            fpc.addPanel(toParent: self)
+            
+        }
+        
+        fpc.move(to: .half, animated: true)
+        
+    }
+    
+    func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
+        return MyFloatingPanelLayout()
+    }
+    
+}
+
+class MyFloatingPanelLayout: FloatingPanelLayout {
+    public var initialPosition: FloatingPanelPosition {
+        return .hidden
+    }
+    
+    public var supportedPositions: Set<FloatingPanelPosition> {
+        return [.full, .half, .hidden]
+    }
+    
+    public func insetFor(position: FloatingPanelPosition) -> CGFloat? {
+        switch position {
+        case .full: return 16.0
+        case .half: return 216.0
+        default: return nil
+        }
+    }
+}
+
+class Test:NSObject, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 500
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let t = UITableViewCell(style: .default, reuseIdentifier: "test")
+        t.textLabel?.text = "500"
+        return t
     }
     
 }
