@@ -54,8 +54,8 @@ class STMSyncer{
                 var _location = location
                 
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-                let date = dateFormatter.date(from: _location["timestamp"] as! String)!.toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
+                dateFormatter.dateFormat = STMConstants.MONGO_DATE
+                let date = dateFormatter.date(from: _location["timestamp"] as! String)!.toString(withFormat: STMConstants.TIME_DATE)
                 
                 _location["timestamp"] = date
                 

@@ -68,7 +68,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                                                     "userId": UIDevice.current.identifierForVendor!.uuidString,
                                                     "longitude": location.coordinate.longitude,
                                                     "routeId": routeId,
-                                                    "timestamp": Date().toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS"),
+                                                    "timestamp": Date().toString(withFormat: STMConstants.TIME_DATE),
                                                     "ord": ord
                 ])
             

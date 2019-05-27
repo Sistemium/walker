@@ -326,9 +326,7 @@ class TableData:NSObject, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let date = Date().toString(withFormat: "yyyy-MM-dd").toDate(dateFormat: "yyyy-MM-dd").toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
-        
-        
+        let date = Date().toString(withFormat: STMConstants.TIMELESS_DATE).toDate(dateFormat: STMConstants.TIMELESS_DATE).toString(withFormat: STMConstants.TIME_DATE)
         
         let t = UITableViewCell(style: .subtitle, reuseIdentifier: "test")
         t.textLabel?.text = "Today"

@@ -13,5 +13,8 @@ class STMConstants{
     static let AVERAGE_HUMAN_SPEED = 1.4
     static let API_URL = "https://walker.sistemium.com/api"
     static let HTTP_TIMEOUT = 30.0
+    static let TIMELESS_DATE = "yyyy-MM-dd"
+    static let TIME_DATE = "yyyy-MM-dd HH:mm:ss.SSS"
+    static let MONGO_DATE = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     
 }
