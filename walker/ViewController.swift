@@ -33,7 +33,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     
     var timer = Timer()
     let fpc = FloatingPanelController()
-    let test = Test()
+    let test = TableData()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -246,9 +246,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             
             while (index2 < _polygons.count){
                 
-                if (_polygons[index1].intersects(_polygons[index2])
-                    && _polygons[index1].area()! < STMConstants.POLYGON_SIZE
-                    && _polygons[index2].area()! < STMConstants.POLYGON_SIZE){
+                if (_polygons[index1].intersects(_polygons[index2])){
                     
                     _polygons[index1] = _polygons[index1].union(_polygons[index2]) as! Polygon
                     
@@ -316,19 +314,25 @@ class MyFloatingPanelLayout: FloatingPanelLayout {
     }
 }
 
-class Test:NSObject, UITableViewDataSource {
+class TableData:NSObject, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 500
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let t = UITableViewCell(style: .default, reuseIdentifier: "test")
-        t.textLabel?.text = "500"
+        
+        let date = Date().toString(withFormat: "yyyy-MM-dd").toDate(dateFormat: "yyyy-MM-dd").toString(withFormat: "yyyy-MM-dd HH:mm:ss.SSS")
+        
+        
+        
+        let t = UITableViewCell(style: .subtitle, reuseIdentifier: "test")
+        t.textLabel?.text = "Today"
+        t.detailTextLabel?.text = date.description
         return t
     }
     
