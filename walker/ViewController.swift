@@ -142,10 +142,11 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
         polygons = unionPolygons(polygons: polygons)
         
-        for polygon in polygons{
+        DispatchQueue.main.async() {
+            [unowned self, polygons] in
+        
+            for polygon in polygons{
             
-            DispatchQueue.main.async() {
-                [unowned self] in
                 self.mapView.addOverlay(polygon.mapShape() as! MKPolygon)
             }
             
