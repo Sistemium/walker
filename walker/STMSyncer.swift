@@ -74,7 +74,7 @@ class STMSyncer{
                 if (_location["timestamp"] as! String) < ViewController.lastProcessedTimestamp {
                     
                     ViewController.lastProcessedTimestamp = ""
-                                        
+                    
                 }
                 
             }

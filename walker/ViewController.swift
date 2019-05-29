@@ -139,17 +139,32 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             
         }
         
-        
-        polygons = unionPolygons(polygons: polygons)
-        
-        DispatchQueue.main.async() {
-            [unowned self, polygons] in
-        
-            for polygon in polygons{
-            
-                self.mapView.addOverlay(polygon.mapShape() as! MKPolygon)
+        DispatchQueue.global().async {
+            [unowned self] in
+
+            let multi = self.unionPolygons(polygons: polygons)
+
+            if multi is MultiPolygon {
+
+                for shape in (multi?.mapShape() as! MKShapesCollection).shapes {
+                    
+                    DispatchQueue.main.sync {
+                        [unowned self] in
+                        self.mapView.addOverlay(shape as! MKPolygon)
+                    }
+
+                }
+
+            } else if multi != nil {
+                
+                DispatchQueue.main.sync {
+                    [unowned self] in
+                    self.mapView.addOverlay(multi!.mapShape() as! MKPolygon)
+                    
+                }
+
             }
-            
+
         }
         
     }
@@ -235,35 +250,24 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
     }
     
-    func unionPolygons(polygons:[Polygon]) -> [Polygon] {
+    func unionPolygons(polygons:[Geometry]) -> Geometry?{
         
-        var _polygons = polygons
-        
-        var index1 = 0
-        
-        while (index1 < _polygons.count - 1){
+        var _polygons:Geometry?
+    
+        for polygon in polygons {
             
-            var index2 = index1 + 1
-            
-            while (index2 < _polygons.count){
+            if (_polygons == nil){
                 
-                if (_polygons[index1].intersects(_polygons[index2])){
-                    
-                    _polygons[index1] = _polygons[index1].union(_polygons[index2]) as! Polygon
-                    
-                    _polygons.remove(at: index2)
-                    
-                    index2 -= 1
-                    
-                }
+                _polygons = polygon
                 
-                index2 += 1
+            } else {
+                
+                _polygons = _polygons?.union(polygon)
                 
             }
             
-            index1 += 1
-            
         }
+        
         
         return _polygons
         
@@ -276,6 +280,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             polygon.alpha = 0.5
             return polygon
         }
+        
         return MKOverlayRenderer()
     }
     
