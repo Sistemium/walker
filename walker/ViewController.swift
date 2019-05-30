@@ -33,13 +33,14 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     
     var timer = Timer()
     let fpc = FloatingPanelController()
-    let test = TableData()
+    let tableData = TableData()
+    var drawing = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let contentVC = UITableViewController()
-        contentVC.tableView.dataSource = test
+        contentVC.tableView.dataSource = tableData
         fpc.delegate = self
         fpc.set(contentViewController: contentVC)
         fpc.track(scrollView: contentVC.tableView)
@@ -84,15 +85,17 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             infoItem.heightAnchor.constraint(equalToConstant: 40),
             infoItem.widthAnchor.constraint(equalToConstant: 40),
             ])
-
+        
         
         STMLocation.sharedInstance.startTracking()
         drawAllPolylines()
-        self.startProcessing().then(self.drawAllPolylines)
+        //        self.startProcessing().then(self.drawAllPolylines)
         timer = Timer.scheduledTimer(withTimeInterval: STMConstants.AVERAGE_HUMAN_SPEED * STMConstants.ACCURACY, repeats:true, block:{[unowned self] _ in
-            self.startProcessing().then(self.drawAllPolylines)
+            if !self.drawing {
+                self.startProcessing().then(self.drawAllPolylines)
+            }
         })
-
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -102,6 +105,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     
     var lastDrawnPolygonId = ""
     var coordinates:[Coordinate] = []
+    var multiPolygon: Geometry?
     
     func drawAllPolylines(locations:Array<Dictionary<String, Any>>? = nil){
         
@@ -141,30 +145,38 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
         DispatchQueue.global().async {
             [unowned self] in
-
-            let multi = self.unionPolygons(polygons: polygons)
-
-            if multi is MultiPolygon {
-
-                for shape in (multi?.mapShape() as! MKShapesCollection).shapes {
+            
+            self.drawing = true
+            
+            self.multiPolygon = self.unionPolygons(polygons: polygons, geometry: self.multiPolygon)
+            
+            DispatchQueue.main.sync {
+                [unowned self] in
+                self.mapView.removeOverlays(self.mapView.overlays)
+            }
+            
+            if self.multiPolygon is MultiPolygon {
+                
+                for shape in (self.multiPolygon?.mapShape() as! MKShapesCollection).shapes {
                     
                     DispatchQueue.main.sync {
                         [unowned self] in
                         self.mapView.addOverlay(shape as! MKPolygon)
+                        self.drawing = false
                     }
-
+                    
                 }
-
-            } else if multi != nil {
+                
+            } else if self.multiPolygon != nil {
                 
                 DispatchQueue.main.sync {
                     [unowned self] in
-                    self.mapView.addOverlay(multi!.mapShape() as! MKPolygon)
-                    
+                    self.mapView.addOverlay(self.multiPolygon!.mapShape() as! MKPolygon)
+                    self.drawing = false
                 }
-
+                
             }
-
+            
         }
         
     }
@@ -190,7 +202,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             var result:Array<Dictionary<String, Any>> = []
             
             let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(ViewController.lastProcessedTimestamp)'", orderBy:"timestamp")
-                        
+            
             for location in locations{
                 
                 if self.lastProcessedRouteId != location["routeId"] as! String {
@@ -223,7 +235,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                 }
                 
                 if (similar.count == 0){
-                                        
+                    
                     let atr = ["id": location["id"] as! String,
                                "latitude": location["latitude"] as! Double,
                                "longitude": location["longitude"] as! Double,
@@ -250,10 +262,10 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
     }
     
-    func unionPolygons(polygons:[Geometry]) -> Geometry?{
+    func unionPolygons(polygons:[Geometry], geometry:Geometry? = nil) -> Geometry?{
         
-        var _polygons:Geometry?
-    
+        var _polygons:Geometry? = geometry
+        
         for polygon in polygons {
             
             if (_polygons == nil){
