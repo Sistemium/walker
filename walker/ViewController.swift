@@ -150,30 +150,24 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             
             self.multiPolygon = self.unionPolygons(polygons: polygons, geometry: self.multiPolygon)
             
-            DispatchQueue.main.sync {
+            DispatchQueue.main.sync{
                 [unowned self] in
                 self.mapView.removeOverlays(self.mapView.overlays)
-            }
             
-            if self.multiPolygon is MultiPolygon {
-                
-                for shape in (self.multiPolygon?.mapShape() as! MKShapesCollection).shapes {
+                if self.multiPolygon is MultiPolygon {
                     
-                    DispatchQueue.main.sync {
-                        [unowned self] in
-                        self.mapView.addOverlay(shape as! MKPolygon)
-                        self.drawing = false
+                    for shape in (self.multiPolygon?.mapShape() as! MKShapesCollection).shapes {
+                    
+                            self.mapView.addOverlay(shape as! MKPolygon)
+                        
                     }
                     
+                } else if self.multiPolygon != nil {
+                    
+                        self.mapView.addOverlay(self.multiPolygon!.mapShape() as! MKPolygon)
                 }
                 
-            } else if self.multiPolygon != nil {
-                
-                DispatchQueue.main.sync {
-                    [unowned self] in
-                    self.mapView.addOverlay(self.multiPolygon!.mapShape() as! MKPolygon)
-                    self.drawing = false
-                }
+                self.drawing = false
                 
             }
             

@@ -66,7 +66,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                                                     "id": UUID().uuidString,
                                                     "latitude": location.coordinate.latitude + STMLocation.test,
                                                     "userId": UIDevice.current.identifierForVendor!.uuidString,
-                                                    "longitude": location.coordinate.longitude,
+                                                    "longitude": location.coordinate.longitude + STMLocation.test,
                                                     "routeId": routeId,
                                                     "timestamp": Date().toString(withFormat: STMConstants.TIME_DATE),
                                                     "ord": ord
