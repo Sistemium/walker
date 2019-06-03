@@ -86,14 +86,13 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             infoItem.widthAnchor.constraint(equalToConstant: 40),
             ])
         
+        self.startProcessing()
+        self.drawAllPolylines()
         
         STMLocation.sharedInstance.startTracking()
-        drawAllPolylines()
-        //        self.startProcessing().then(self.drawAllPolylines)
-        timer = Timer.scheduledTimer(withTimeInterval: STMConstants.AVERAGE_HUMAN_SPEED * STMConstants.ACCURACY, repeats:true, block:{[unowned self] _ in
-            if !self.drawing {
-                self.startProcessing().then(self.drawAllPolylines)
-            }
+        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats:true, block:{[unowned self] _ in
+            self.startProcessing()
+            self.drawAllPolylines()
         })
         
     }
@@ -143,6 +142,12 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             
         }
         
+        if self.drawing {
+         
+            return
+            
+        }
+        
         DispatchQueue.global().async {
             [unowned self] in
             
@@ -179,13 +184,12 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     var polygonId = ""
     var processing = false
     
-    func startProcessing() -> Promise<Array<Dictionary<String, Any>>>{
+    func startProcessing() {
         
-        return Promise<Array<Dictionary<String, Any>>>(on: .global()) { fulfill, reject in
-            
-            if (self.processing){
-                
-                fulfill([])
+        DispatchQueue.global().async {
+            [unowned self] in
+         
+            if self.processing {
                 
                 return
                 
@@ -248,11 +252,8 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             }
             
             self.processing = false
-            fulfill(result)
             
-            }.catch({ (Error) in
-                self.processing = false
-            })
+        }
         
     }
     
