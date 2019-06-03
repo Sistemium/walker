@@ -50,6 +50,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         mapView.delegate = self
         mapView.setUserTrackingMode(.followWithHeading, animated: true)
         mapView.showsCompass = false
+        mapView.isPitchEnabled = false
         
         let userTrackingButton = MKUserTrackingButton(mapView: mapView)
         userTrackingButton.layer.backgroundColor = UIColor(white: 1, alpha: 0.8).cgColor
