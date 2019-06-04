@@ -35,6 +35,9 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     let fpc = FloatingPanelController()
     let tableData = TableData()
     var drawing = false
+    var lastProcessedRouteId = ""
+    var polygonId = ""
+    var processing = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,13 +90,12 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             infoItem.widthAnchor.constraint(equalToConstant: 40),
             ])
         
-        self.startProcessing()
-        self.drawAllPolylines()
+        self.drawAllPolylines(onFlyDraw: true)
         
         STMLocation.sharedInstance.startTracking()
-        timer = Timer.scheduledTimer(withTimeInterval: 5, repeats:true, block:{[unowned self] _ in
-            self.startProcessing()
+        timer = Timer.scheduledTimer(withTimeInterval: 15, repeats:true, block:{[unowned self] _ in
             self.drawAllPolylines()
+            self.startProcessing()
         })
         
     }
@@ -103,87 +105,70 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
     }
     
-    var lastDrawnPolygonId = ""
-    var coordinates:[Coordinate] = []
-    var multiPolygon: Geometry?
-    
-    func drawAllPolylines(locations:Array<Dictionary<String, Any>>? = nil){
-        
-        var polygons: [Polygon] = []
-        
-        let locations = locations ?? STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
-        
-        for location in locations {
-            
-            if lastDrawnPolygonId != location["polygonId"] as! String {
-                
-                lastDrawnPolygonId = location["polygonId"] as! String
-                
-                if (coordinates.count > 1) {
-                    
-                    polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
-                    
-                }
-                
-                coordinates = []
-                
-            }
-            
-            let coordinate = Coordinate(x: CLLocationDegrees(location["longitude"] as! Double), y: CLLocationDegrees(location["latitude"] as! Double))
-            
-            coordinates.append(coordinate)
-            
-        }
-        
-        if (coordinates.count > 1) {
-            
-            polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
-            
-            coordinates = [coordinates.last!]
-            
-        }
-        
-        if self.drawing {
-         
-            return
-            
-        }
+    func drawAllPolylines(onFlyDraw:Bool = false){
         
         DispatchQueue.global().async {
             [unowned self] in
             
-            self.drawing = true
+            if self.drawing {
+                
+                return
+                
+            }
             
-            self.multiPolygon = self.unionPolygons(polygons: polygons, geometry: self.multiPolygon)
+            var polygons: [Geometry] = []
+            var lastDrawnPolygonId = ""
+            var coordinates:[Coordinate] = []
+
+            print("begin find " + Date().description)
             
-            DispatchQueue.main.sync{
-                [unowned self] in
-                self.mapView.removeOverlays(self.mapView.overlays)
+            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
             
-                if self.multiPolygon is MultiPolygon {
+            print("end find"  + Date().description)
+            
+            for location in locations {
+                
+                if lastDrawnPolygonId != location["polygonId"] as! String {
                     
-                    for shape in (self.multiPolygon?.mapShape() as! MKShapesCollection).shapes {
+                    lastDrawnPolygonId = location["polygonId"] as! String
                     
-                            self.mapView.addOverlay(shape as! MKPolygon)
+                    if (coordinates.count > 1) {
+                        
+                        polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE * 2)!))
                         
                     }
                     
-                } else if self.multiPolygon != nil {
+                    coordinates = []
                     
-                        self.mapView.addOverlay(self.multiPolygon!.mapShape() as! MKPolygon)
                 }
                 
-                self.drawing = false
+                let coordinate = Coordinate(x: CLLocationDegrees(location["longitude"] as! Double), y: CLLocationDegrees(location["latitude"] as! Double))
+                
+                coordinates.append(coordinate)
                 
             }
+            
+            if (coordinates.count > 1) {
+                
+                polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
+                
+                coordinates = [coordinates.last!]
+                
+            }
+            
+            self.drawing = true
+            
+            print("before union " + Date().description)
+            
+            self.unionPolygons(polygons: polygons, onFlyDraw: onFlyDraw)
+            
+            print("after union " + Date().description)
+            
+            self.drawing = false
             
         }
         
     }
-    
-    var lastProcessedRouteId = ""
-    var polygonId = ""
-    var processing = false
     
     func startProcessing() {
         
@@ -197,8 +182,6 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             }
             
             self.processing = true
-            
-            var result:Array<Dictionary<String, Any>> = []
             
             let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(ViewController.lastProcessedTimestamp)'", orderBy:"timestamp")
             
@@ -244,8 +227,6 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                     
                     STMPersister.sharedInstance.mergeSync(entityName: "processedLocation", attributes: atr as! Dictionary<String, Bindable>)
                     
-                    result.append(atr)
-                    
                 }
                 
                 ViewController.lastProcessedTimestamp = location["timestamp"] as! String
@@ -258,9 +239,9 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
     }
     
-    func unionPolygons(polygons:[Geometry], geometry:Geometry? = nil) -> Geometry?{
+    func unionPolygons(polygons:[Geometry], onFlyDraw:Bool = false) {
         
-        var _polygons:Geometry? = geometry
+        var _polygons:Geometry? = nil
         
         for polygon in polygons {
             
@@ -274,10 +255,41 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                 
             }
             
+            if onFlyDraw {
+                
+                draw(multiPolygon: _polygons)
+                
+            }
+            
         }
         
+        draw(multiPolygon: _polygons)
         
-        return _polygons
+    }
+    
+    func draw(multiPolygon:Geometry?){
+        
+        DispatchQueue.main.sync{
+            [unowned self] in
+            self.mapView.removeOverlays(self.mapView.overlays)
+            
+            print("after remove overlay " + Date().description)
+            
+            if multiPolygon is MultiPolygon {
+                
+                for shape in (multiPolygon?.mapShape() as! MKShapesCollection).shapes {
+                    
+                    self.mapView.addOverlay(shape as! MKPolygon)
+                    
+                }
+                
+            } else if multiPolygon != nil {
+                
+                self.mapView.addOverlay(multiPolygon!.mapShape() as! MKPolygon)
+            }
+            print("after drawing " + Date().description)
+            
+        }
         
     }
     
