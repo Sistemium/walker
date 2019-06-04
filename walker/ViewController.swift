@@ -119,12 +119,8 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             var polygons: [Geometry] = []
             var lastDrawnPolygonId = ""
             var coordinates:[Coordinate] = []
-
-            print("begin find " + Date().description)
             
             let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
-            
-            print("end find"  + Date().description)
             
             for location in locations {
                 
@@ -158,11 +154,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             
             self.drawing = true
             
-            print("before union " + Date().description)
-            
             self.unionPolygons(polygons: polygons, onFlyDraw: onFlyDraw)
-            
-            print("after union " + Date().description)
             
             self.drawing = false
             
@@ -273,8 +265,6 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             [unowned self] in
             self.mapView.removeOverlays(self.mapView.overlays)
             
-            print("after remove overlay " + Date().description)
-            
             if multiPolygon is MultiPolygon {
                 
                 for shape in (multiPolygon?.mapShape() as! MKShapesCollection).shapes {
@@ -287,7 +277,6 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                 
                 self.mapView.addOverlay(multiPolygon!.mapShape() as! MKPolygon)
             }
-            print("after drawing " + Date().description)
             
         }
         
