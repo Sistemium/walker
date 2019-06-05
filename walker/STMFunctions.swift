@@ -8,6 +8,7 @@
 
 import Foundation
 import Squeal
+import MapKit
 
 extension Date {
     
@@ -47,6 +48,19 @@ extension NSString : Bindable {
     
     public func bindToStatement(_ statement:Statement, atIndex index:Int) throws {
         try statement.bindStringValue(self as String, atIndex: index)
+    }
+    
+}
+
+extension Double {
+    
+    func formatDistance() -> String {
+        
+        let df = MKDistanceFormatter()
+        df.unitStyle = .full
+        
+        return df.string(fromDistance: self)
+        
     }
     
 }

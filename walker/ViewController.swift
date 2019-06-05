@@ -345,8 +345,47 @@ class TableData:NSObject, UITableViewDataSource {
         
         let t = UITableViewCell(style: .subtitle, reuseIdentifier: "test")
         t.textLabel?.text = "Today"
-        t.detailTextLabel?.text = date.description
+        
+        let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr: "timestamp > '\(date.description)'", orderBy:"polygonId, ord")
+        
+        let distance = calculateDistance(locations: locations)
+        
+        t.detailTextLabel?.text = distance
         return t
+    }
+    
+    func calculateDistance(locations:Array<Dictionary<String, Bindable>>) -> String{
+        
+        var lastProvessed = ""
+        var lastLocation:CLLocation? = nil
+        var result = 0.0
+        
+        for location in locations {
+            
+            let coordinate = CLLocation(latitude: location["latitude"] as! Double, longitude: location["longitude"] as! Double)
+            
+            let polygonId = location["polygonId"] as! String
+            
+            if polygonId != lastProvessed {
+                
+                lastLocation = nil
+                
+                lastProvessed = polygonId
+                
+            }
+            
+            if lastLocation != nil {
+                
+                result += lastLocation!.distance(from: coordinate)
+                
+            }
+            
+            lastLocation = coordinate
+            
+        }
+        
+        return result.formatDistance()
+        
     }
     
 }
