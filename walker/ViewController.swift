@@ -238,7 +238,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         for polygon in polygons {
             
             if (_polygons == nil){
-                
+            
                 _polygons = polygon
                 
             } else {
@@ -246,7 +246,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                 _polygons = _polygons?.union(polygon)
                 
             }
-            
+        
             if onFlyDraw {
                 
                 draw(multiPolygon: _polygons)
@@ -285,6 +285,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolygon {
             let polygon = MKPolygonRenderer(overlay: overlay)
+//            polygon.fillColor = UIColor(displayP3Red: CGFloat(arc4random()) / CGFloat(UInt32.max), green: CGFloat(arc4random()) / CGFloat(UInt32.max), blue: CGFloat(arc4random()) / CGFloat(UInt32.max), alpha: 0.5)
             polygon.fillColor = .red
             polygon.alpha = 0.5
             return polygon
@@ -336,21 +337,43 @@ class TableData:NSObject, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let date = Date().toString(withFormat: STMConstants.TIMELESS_DATE).toDate(dateFormat: STMConstants.TIMELESS_DATE).toString(withFormat: STMConstants.TIME_DATE)
-        
         let t = UITableViewCell(style: .subtitle, reuseIdentifier: "test")
-        t.textLabel?.text = "Today"
         
-        let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr: "timestamp > '\(date.description)'", orderBy:"polygonId, ord")
+        if indexPath.row == 0 {
+            
+            let date = Date().toString(withFormat: STMConstants.TIMELESS_DATE).toDate(dateFormat: STMConstants.TIMELESS_DATE).toString(withFormat: STMConstants.TIME_DATE)
+            
+            t.textLabel?.text = "Today"
+            
+            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr: "timestamp > '\(date.description)'", orderBy:"polygonId, ord")
+            
+            let distance = calculateDistance(locations: locations)
+            
+            t.detailTextLabel?.text = distance
+            
+        }
         
-        let distance = calculateDistance(locations: locations)
+        if indexPath.row == 1 {
+            
+            let date = Date().toString(withFormat: STMConstants.TIMELESS_DATE).toDate(dateFormat: STMConstants.TIMELESS_DATE)
+            
+            let yesterday = Calendar.current.date(byAdding: .day, value: 1, to: date)!.toString(withFormat: STMConstants.TIME_DATE)
+            
+            t.textLabel?.text = "Yesterday"
+            
+            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr: "timestamp < '\(date.description)' and timestamp > '\(yesterday)'", orderBy:"polygonId, ord")
+            
+            let distance = calculateDistance(locations: locations)
+            
+            t.detailTextLabel?.text = distance
+            
+        }
         
-        t.detailTextLabel?.text = distance
         return t
     }
     
