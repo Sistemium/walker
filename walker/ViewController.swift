@@ -350,7 +350,7 @@ class TableData:NSObject, UITableViewDataSource {
             
             t.textLabel?.text = "Today"
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr: "timestamp > '\(date.description)'", orderBy:"polygonId, ord")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp > '\(date.description)'", orderBy:"routeId, ord")
             
             let distance = calculateDistance(locations: locations)
             
@@ -362,11 +362,13 @@ class TableData:NSObject, UITableViewDataSource {
             
             let date = Date().toString(withFormat: STMConstants.TIMELESS_DATE).toDate(dateFormat: STMConstants.TIMELESS_DATE)
             
-            let yesterday = Calendar.current.date(byAdding: .day, value: 1, to: date)!.toString(withFormat: STMConstants.TIME_DATE)
+            let today = date.toString(withFormat: STMConstants.TIME_DATE)
+            
+            let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: date)!.toString(withFormat: STMConstants.TIME_DATE)
             
             t.textLabel?.text = "Yesterday"
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", whereExpr: "timestamp < '\(date.description)' and timestamp > '\(yesterday)'", orderBy:"polygonId, ord")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "timestamp < '\(today.description)' and timestamp > '\(yesterday.description)'", orderBy:"routeId, ord")
             
             let distance = calculateDistance(locations: locations)
             
@@ -387,13 +389,13 @@ class TableData:NSObject, UITableViewDataSource {
             
             let coordinate = CLLocation(latitude: location["latitude"] as! Double, longitude: location["longitude"] as! Double)
             
-            let polygonId = location["polygonId"] as! String
+            let routeId = location["routeId"] as! String
             
-            if polygonId != lastProvessed {
+            if routeId != lastProvessed {
                 
                 lastLocation = nil
                 
-                lastProvessed = polygonId
+                lastProvessed = routeId
                 
             }
             
