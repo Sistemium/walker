@@ -55,6 +55,10 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         mapView.showsCompass = false
         mapView.isPitchEnabled = false
         
+//        let anotation = MKPointAnnotation()
+//        anotation.coordinate = CLLocationCoordinate2D(latitude: 54.886165046929094, longitude: 26.607860287352754)
+//        mapView.addAnnotation(anotation)
+        
         let userTrackingButton = MKUserTrackingButton(mapView: mapView)
         userTrackingButton.layer.backgroundColor = UIColor(white: 1, alpha: 0.8).cgColor
         userTrackingButton.layer.borderColor = UIColor.white.cgColor
@@ -101,6 +105,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        
         super.viewDidAppear(animated)
         
     }
@@ -116,44 +121,45 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                 
             }
             
+            self.drawing = true
+            
             var polygons: [Geometry] = []
             var lastDrawnPolygonId = ""
             var coordinates:[Coordinate] = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
-            
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", orderBy:"routeId, ord")
+
             for location in locations {
-                
-                if lastDrawnPolygonId != location["polygonId"] as! String {
-                    
-                    lastDrawnPolygonId = location["polygonId"] as! String
-                    
+
+                if lastDrawnPolygonId != location["routeId"] as! String {
+
+                    lastDrawnPolygonId = location["routeId"] as! String
+
                     if (coordinates.count > 1) {
-                        
-                        polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE * 2)!))
-                        
+
+                        polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE)!))
+
                     }
-                    
+
                     coordinates = []
                     
                 }
-                
+
                 let coordinate = Coordinate(x: CLLocationDegrees(location["longitude"] as! Double), y: CLLocationDegrees(location["latitude"] as! Double))
-                
+
                 coordinates.append(coordinate)
                 
             }
-            
+
             if (coordinates.count > 1) {
-                
+
                 polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
-                
+
                 coordinates = [coordinates.last!]
-                
+
             }
             
-            self.drawing = true
-            
+
             self.unionPolygons(polygons: polygons, onFlyDraw: onFlyDraw)
             
             self.drawing = false
