@@ -17,7 +17,7 @@ class STMSyncer{
     
     func startSyncing(){
         
-        if (sending || receiving) {
+        if sending || receiving {
             
             return
             
@@ -37,7 +37,7 @@ class STMSyncer{
         
         Just.get(STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"timestamp", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
             
-            if (!response.ok){
+            if !response.ok {
                 
                 print("sync Error: \(response.error?.localizedDescription ?? "")")
                 
@@ -65,7 +65,7 @@ class STMSyncer{
                 
                 let result = STMPersister.sharedInstance.updateSync(entityName: "location", columns: Array(_location.keys), values: Array(_location.values) as! [Bindable], whereExpr: "id = '\(_location["id"]!)'")
                 
-                if (result == 0){
+                if result == 0 {
                     
                     STMPersister.sharedInstance.mergeSync(entityName: "location", attributes: _location as! Dictionary<String, Bindable>)
                     
@@ -81,7 +81,7 @@ class STMSyncer{
             
             let result = STMPersister.sharedInstance.updateSync(entityName: "clientEntity", columns: ["offset"], values: [offset], whereExpr: "name = 'location'")
             
-            if (result == 0){
+            if  result == 0 {
                 
                 STMPersister.sharedInstance.mergeSync(entityName: "clientEntity", attributes: ["offset": offset, "name": "location"])
                 
@@ -89,7 +89,7 @@ class STMSyncer{
             
             self.receiving = false
             
-            if ((response.json! as! Array<Dictionary<String,Any>>).count == 1000){
+            if (response.json! as! Array<Dictionary<String,Any>>).count == 1000 {
                 
                 self.receiveData()
                 
@@ -107,7 +107,7 @@ class STMSyncer{
         
         var unsyncedData: Array<Dictionary<String, Any>> = STMPersister.sharedInstance.findSync(entityName: "location", whereExpr: "_id is NULL", orderBy: "timestamp", limit:limit)
             
-        if (unsyncedData.count > 0){
+        if unsyncedData.count > 0 {
             
             Just.post(
                 STMConstants.API_URL + "/location",
@@ -115,7 +115,7 @@ class STMSyncer{
                 timeout :STMConstants.HTTP_TIMEOUT
             ){ response in
                 
-                if (!response.ok){
+                if !response.ok {
                     
                     print("sync Error: \(response.error?.localizedDescription ?? "")")
                     

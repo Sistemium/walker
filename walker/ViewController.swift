@@ -127,15 +127,15 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             var lastDrawnPolygonId = ""
             var coordinates:[Coordinate] = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "location", orderBy:"routeId, ord")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
 
             for location in locations {
 
-                if lastDrawnPolygonId != location["routeId"] as! String {
+                if lastDrawnPolygonId != location["polygonId"] as! String {
 
-                    lastDrawnPolygonId = location["routeId"] as! String
+                    lastDrawnPolygonId = location["polygonId"] as! String
 
-                    if (coordinates.count > 1) {
+                    if coordinates.count > 1 {
 
                         polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE)!))
 
@@ -151,7 +151,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                 
             }
 
-            if (coordinates.count > 1) {
+            if coordinates.count > 1 {
 
                 polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
 
@@ -208,13 +208,13 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
                                                                     + "and longitude < \(coordinate1.longitude) "
                 )
                 
-                if (similar.count > 0){
+                if similar.count > 0 {
                     
                     self.polygonId = UUID().uuidString
                     
                 }
                 
-                if (similar.count == 0){
+                if similar.count == 0 {
                     
                     let atr = ["id": location["id"] as! String,
                                "latitude": location["latitude"] as! Double,
@@ -243,7 +243,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
         for polygon in polygons {
             
-            if (_polygons == nil){
+            if _polygons == nil {
             
                 _polygons = polygon
                 
@@ -302,7 +302,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     
     @objc func getInfo(){
         
-        if (fpc.parent == nil){
+        if fpc.parent == nil {
             
             fpc.addPanel(toParent: self)
             
