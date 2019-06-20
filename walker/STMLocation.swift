@@ -22,6 +22,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     
     override init() {
         super.init()
+        
         locationManager.delegate = self
         locationManager.distanceFilter = STMConstants.ACCURACY
 
@@ -55,8 +56,19 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     
     static var test = 0.0
     
+    var lastLatitude = 0.0, lastLongtitude = 0.0
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locations.forEach{ location in
+            
+            if location.coordinate.latitude == lastLatitude && location.coordinate.longitude == lastLongtitude {
+                
+                return
+                
+            }
+            
+            lastLatitude = location.coordinate.latitude
+            lastLongtitude = location.coordinate.longitude
+            
 //            STMLocation.test -= 0.0001
             
             ord += 1

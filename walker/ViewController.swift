@@ -409,6 +409,8 @@ class TableData:NSObject, UITableViewDataSource {
                 
                 result += lastLocation!.distance(from: coordinate)
                 
+                print(lastLocation!.distance(from: coordinate))
+                
             }
             
             lastLocation = coordinate
