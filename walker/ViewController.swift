@@ -288,6 +288,24 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         
     }
     
+    func randomAnotation(){
+        
+        let cord = mapView.userLocation.location?.coordinate
+        
+        if cord == nil {
+            
+            return
+            
+        }
+        
+        mapView.removeAnnotations(mapView.annotations)
+        
+        let anotation = MKPointAnnotation()
+        anotation.coordinate = CLLocationCoordinate2D(latitude: cord!.latitude + Double.random(in: -0.1...0.1), longitude: cord!.longitude + Double.random(in: -0.1...0.1))
+        mapView.addAnnotation(anotation)
+        
+    }
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if overlay is MKPolygon {
             let polygon = MKPolygonRenderer(overlay: overlay)
@@ -302,6 +320,8 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     
     @objc func getInfo(){
         
+        randomAnotation()
+                
         if fpc.parent == nil {
             
             fpc.addPanel(toParent: self)
