@@ -55,10 +55,6 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         mapView.showsCompass = false
         mapView.isPitchEnabled = false
         
-//        let anotation = MKPointAnnotation()
-//        anotation.coordinate = CLLocationCoordinate2D(latitude: 54.886165046929094, longitude: 26.607860287352754)
-//        mapView.addAnnotation(anotation)
-        
         let userTrackingButton = MKUserTrackingButton(mapView: mapView)
         userTrackingButton.layer.backgroundColor = UIColor(white: 1, alpha: 0.8).cgColor
         userTrackingButton.layer.borderColor = UIColor.white.cgColor
@@ -154,8 +150,6 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             if coordinates.count > 1 {
 
                 polygons.append((LineString(points: coordinates)!.buffer(width: STMConstants.POLYGON_SIZE) as! Polygon))
-
-                coordinates = [coordinates.last!]
 
             }
             
