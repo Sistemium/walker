@@ -295,7 +295,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         mapView.removeAnnotations(mapView.annotations)
         
         let anotation = MKPointAnnotation()
-        anotation.coordinate = CLLocationCoordinate2D(latitude: cord!.latitude + Double.random(in: -0.1...0.1), longitude: cord!.longitude + Double.random(in: -0.1...0.1))
+        anotation.coordinate = CLLocationCoordinate2D(latitude: cord!.latitude + Double.random(in: -0.09...0.09), longitude: cord!.longitude + Double.random(in: -0.09...0.09))
         mapView.addAnnotation(anotation)
         
     }

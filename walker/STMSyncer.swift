@@ -35,6 +35,7 @@ class STMSyncer{
         
         var offset:Int64 = STMPersister.sharedInstance.findSync(entityName: "clientEntity", whereExpr: "name = 'location'").first?["offset"] as? Int64 ?? 0
         
+        //"84DF8774-7BE9-49DF-A6DF-D87304A586C1"
         Just.get(STMConstants.API_URL + "/location", params:["userId":UIDevice.current.identifierForVendor!.uuidString], headers: ["x-page-size":"1000", "x-order-by":"timestamp", "x-offset":"\(offset)"], timeout: STMConstants.HTTP_TIMEOUT){ response in
             
             if !response.ok {

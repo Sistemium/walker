@@ -56,18 +56,24 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
     
     static var test = 0.0
     
-    var lastLatitude = 0.0, lastLongtitude = 0.0
+    var lastLocation: CLLocation?
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         locations.forEach{ location in
             
-            if location.coordinate.latitude == lastLatitude && location.coordinate.longitude == lastLongtitude {
+            if location.coordinate.latitude == lastLocation?.coordinate.latitude && location.coordinate.longitude == lastLocation?.coordinate.longitude {
                 
                 return
                 
             }
             
-            lastLatitude = location.coordinate.latitude
-            lastLongtitude = location.coordinate.longitude
+            if lastLocation != nil && lastLocation!.distance(from: location) < STMConstants.ACCURACY {
+                
+                return
+                
+            }
+            
+            lastLocation = location
             
 //            STMLocation.test -= 0.0001
             
@@ -85,7 +91,6 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                 ])
             
             STMSyncer.sharedInstance.startSyncing()
-            print(locations.first!.coordinate)
         }
     }
     
