@@ -90,7 +90,7 @@ class STMLocation:NSObject, CLLocationManagerDelegate{
                                                     "ord": ord
                 ])
             
-            STMSyncer.sharedInstance.startSyncing()
+//            STMSyncer.sharedInstance.startSyncing()
         }
     }
     

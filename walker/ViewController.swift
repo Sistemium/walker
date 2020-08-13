@@ -123,13 +123,13 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
             var lastDrawnPolygonId = ""
             var coordinates:[Coordinate] = []
             
-            let locations = STMPersister.sharedInstance.findSync(entityName: "processedLocation", orderBy:"polygonId, ord")
+            let locations = STMPersister.sharedInstance.findSync(entityName: "location", orderBy:"routeId, ord")
 
             for location in locations {
 
-                if lastDrawnPolygonId != location["polygonId"] as! String {
+                if lastDrawnPolygonId != location["routeId"] as! String {
 
-                    lastDrawnPolygonId = location["polygonId"] as! String
+                    lastDrawnPolygonId = location["routeId"] as! String
 
                     if coordinates.count > 1 {
 
@@ -295,7 +295,7 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
         mapView.removeAnnotations(mapView.annotations)
         
         let anotation = MKPointAnnotation()
-        anotation.coordinate = CLLocationCoordinate2D(latitude: cord!.latitude + Double.random(in: -0.09...0.09), longitude: cord!.longitude + Double.random(in: -0.09...0.09))
+        anotation.coordinate = CLLocationCoordinate2D(latitude: cord!.latitude + Double.random(in: -0.08...0.08), longitude: cord!.longitude + Double.random(in: -0.08...0.08))
         mapView.addAnnotation(anotation)
         
     }
@@ -315,7 +315,9 @@ class ViewController: UIViewController, MKMapViewDelegate, FloatingPanelControll
     @objc func getInfo(){
         
         randomAnotation()
-                
+        
+        (fpc.contentViewController as! UITableViewController).tableView.reloadData()
+        
         if fpc.parent == nil {
             
             fpc.addPanel(toParent: self)

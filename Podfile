@@ -5,7 +5,7 @@ platform :ios, '11.0'
 use_frameworks!
 
 target 'walker' do
-  pod "GEOSwift"
+  pod 'GEOSwift'
   pod 'Squeal'
   pod 'Firebase/Core'
   pod 'Fabric'
